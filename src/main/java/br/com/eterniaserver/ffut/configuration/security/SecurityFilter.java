@@ -84,7 +84,7 @@ public class SecurityFilter {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
-                    request.requestMatchers(HttpMethod.POST, "/user/").hasRole(BaseRoles.ADMIN.name());
+                    request.requestMatchers(HttpMethod.POST, "/user/").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.GET, "/user/**").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.PUT, "/user/").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.DELETE, "/user/**").hasRole(BaseRoles.ADMIN.name());

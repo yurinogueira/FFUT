@@ -15,6 +15,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +35,11 @@ public class UserAccountController {
 
     private final UserAccountService userAccountService;
 
+    public UserDetails getCurrentUser() {
+        Authentication authenticationToken = SecurityContextHolder.getContext().getAuthentication();
+        return (UserDetails) authenticationToken.getPrincipal();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreateUserResponse create(@RequestBody @Valid CreateUserRequest request) {
@@ -47,6 +55,10 @@ public class UserAccountController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public UpdateUserResponse update(@RequestBody @Valid UpdateUserRequest request) {
+        UserDetails userDetails = getCurrentUser();
+
+        request.setUserDetails(userDetails);
+
         return userAccountService.update(request);
     }
 

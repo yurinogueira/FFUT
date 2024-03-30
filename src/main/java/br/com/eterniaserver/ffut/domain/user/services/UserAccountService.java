@@ -70,12 +70,17 @@ public class UserAccountService {
 
     @Transactional
     public UpdateUserResponse update(UpdateUserRequest request) {
+        if (userAccountRepository.existsByLogin(request.getLogin())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, Constants.LOGIN_IN_USE);
+        }
+
         UserAccount userAccount = userAccountRepository
-                .findByLogin(request.login())
+                .findByLogin(request.getUserDetails().getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-        userAccount.setName(request.name());
-        userAccount.setSurname(request.surname());
+        userAccount.setLogin(request.getLogin());
+        userAccount.setName(request.getName());
+        userAccount.setSurname(request.getSurname());
 
         userAccount = userAccountRepository.save(userAccount);
 
