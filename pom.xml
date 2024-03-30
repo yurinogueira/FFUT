@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>br.com.eterniaserver</groupId>
-    <artifactId>bddia</artifactId>
+    <artifactId>tuff</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>BDDIA</name>
-    <description>BDDIA</description>
+    <name>TUFF</name>
+    <description>TUFF</description>
 
     <properties>
         <java.version>21</java.version>
