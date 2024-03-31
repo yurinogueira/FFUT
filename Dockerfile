@@ -11,6 +11,11 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 
-COPY --from=build /app/target/ffut-*.jar .
+LABEL maintainer="personal@yurinogueira.dev.br"
+LABEL vendor="TUFF"
 
-CMD ["java", "-jar", "ffut-*.jar", "--spring.config.location=file:/home/ubuntu/config/application.properties"]
+ARG JAR_FILE=/app/target/ffut-*.jar
+
+COPY --from=build ${JAR_FILE} app.jar
+
+CMD ["java", "-jar", "/app.jar", "--spring.config.location=file:/application.properties"]
