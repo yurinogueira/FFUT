@@ -82,6 +82,8 @@ public class UserAccountService {
         userAccount.setName(request.getName());
         userAccount.setSurname(request.getSurname());
 
+        userAccount.validate();
+
         userAccount = userAccountRepository.save(userAccount);
 
         UserDto userDto = toDto(userAccount);
@@ -97,7 +99,7 @@ public class UserAccountService {
 
         userAccountRepository.deleteByLogin(request.login());
 
-        return new DeleteUserResponse(List.of());
+        return new DeleteUserResponse();
     }
 
     @Transactional(readOnly = true)

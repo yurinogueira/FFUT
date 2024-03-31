@@ -26,9 +26,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Configuration
@@ -82,16 +86,27 @@ public class SecurityFilter {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> {
+                    CorsConfiguration configuration = new CorsConfiguration();
+                    configuration.setAllowedOrigins(List.of("*"));
+                    configuration.setAllowedMethods(List.of("*"));
+                    configuration.setAllowedHeaders(List.of("*"));
+
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", configuration);
+
+                    cors.configurationSource(source);
+                })
                 .authorizeHttpRequests(request -> {
-                    request.requestMatchers(HttpMethod.POST, "/user/").hasRole(BaseRoles.USER.name());
-                    request.requestMatchers(HttpMethod.GET, "/user/**").hasRole(BaseRoles.USER.name());
-                    request.requestMatchers(HttpMethod.PUT, "/user/").hasRole(BaseRoles.USER.name());
-                    request.requestMatchers(HttpMethod.DELETE, "/user/**").hasRole(BaseRoles.ADMIN.name());
+                    request.requestMatchers(HttpMethod.OPTIONS).permitAll();
                     request.requestMatchers("/login/**").permitAll();
                     request.requestMatchers("/swagger-ui/**").permitAll();
                     request.requestMatchers("/api-docs/**").permitAll();
                     request.requestMatchers("/error/**").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/user/").permitAll();
+                    request.requestMatchers(HttpMethod.GET, "/user/**").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.PUT, "/user/").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.DELETE, "/user/**").hasRole(BaseRoles.ADMIN.name());
                     request.anyRequest().denyAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
