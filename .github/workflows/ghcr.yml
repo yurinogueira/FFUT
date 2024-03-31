@@ -7,9 +7,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-test:
+  build-and-test:
     name: Test
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin
+          MONGO_INITDB_DATABASE: ffut
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: "Checkout GitHub Action"
@@ -24,9 +38,10 @@ jobs:
       - name: "Test"
         run: mvn test
 
-  build-push:
+  package-and-push:
     name: Push Docker Image
     runs-on: ubuntu-latest
+    needs: [build-and-test]
     permissions:
       contents: read
       packages: write
