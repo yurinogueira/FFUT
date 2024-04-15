@@ -1,3 +1,3 @@
 package br.com.eterniaserver.ffut.domain.user.models;
 
-public record VerifyTokenResponse() { }
+public record VerifyTokenResponse(boolean valid) { }

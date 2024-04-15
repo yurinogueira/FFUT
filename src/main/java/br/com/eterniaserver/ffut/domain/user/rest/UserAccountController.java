@@ -46,6 +46,13 @@ public class UserAccountController {
         return userAccountService.create(request);
     }
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ReadUserResponse read() {
+        UserDetails userDetails = getCurrentUser();
+        return userAccountService.read(new ReadUserRequest(userDetails.getUsername()));
+    }
+
     @GetMapping("{login}/")
     @ResponseStatus(HttpStatus.OK)
     public ReadUserResponse read(@PathVariable String login) {

@@ -50,12 +50,12 @@ public class JWTService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Constants.INVALID_TOKEN);
         }
 
-        String token = request.token().split(" ")[0];
+        String token = request.token().split(" ")[1];
         if (!isValidToken(token)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_TOKEN);
         }
 
-        return new VerifyTokenResponse();
+        return new VerifyTokenResponse(true);
     }
 
     public AuthenticateResponse authenticate(AuthenticateRequest request) {
@@ -74,7 +74,7 @@ public class JWTService {
         String token = Jwts.builder().subject(login).expiration(date).signWith(getSecretKey()).compact();
         String[] roles = userAccount.getRoles().toArray(String[]::new);
 
-        return new AuthenticateResponse(new TokenDto(login, token, roles));
+        return new AuthenticateResponse(new TokenDto(login, token, roles, date));
     }
 
     public String getUserLogin(String token) {
