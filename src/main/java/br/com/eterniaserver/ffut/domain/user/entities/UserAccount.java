@@ -1,6 +1,7 @@
 package br.com.eterniaserver.ffut.domain.user.entities;
 
 import br.com.eterniaserver.ffut.Constants;
+import br.com.eterniaserver.ffut.domain.user.dtos.UserDto;
 import br.com.eterniaserver.ffut.domain.user.enums.BaseLocales;
 import br.com.eterniaserver.ffut.domain.user.enums.BaseRoles;
 
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -36,6 +38,8 @@ public class UserAccount {
 
     private String locale;
 
+    private LocalDateTime createdAt;
+
     private List<String> roles = new ArrayList<>();
 
     public void validate() {
@@ -54,6 +58,16 @@ public class UserAccount {
 
     public void addRole(BaseRoles role) {
         roles.add(role.name());
+    }
+
+    public UserDto toDto() {
+        return new UserDto(
+                getLogin(),
+                getName(),
+                getSurname(),
+                getRoles(),
+                getCreatedAt()
+        );
     }
 
 }

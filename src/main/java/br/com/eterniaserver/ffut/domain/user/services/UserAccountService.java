@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -47,12 +47,13 @@ public class UserAccountService {
         userAccount.setSurname(request.surname());
         userAccount.setLocale(request.locale());
         userAccount.addRole(BaseRoles.USER);
+        userAccount.setCreatedAt(LocalDateTime.now());
 
         userAccount.validate();
 
         userAccount = userAccountRepository.save(userAccount);
 
-        UserDto userDto = toDto(userAccount);
+        UserDto userDto = userAccount.toDto();
 
         return new CreateUserResponse(userDto);
     }
@@ -63,7 +64,7 @@ public class UserAccountService {
                 .findByLogin(request.login())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-        UserDto userDto = toDto(userAccount);
+        UserDto userDto = userAccount.toDto();
 
         return new ReadUserResponse(userDto);
     }
@@ -86,7 +87,7 @@ public class UserAccountService {
 
         userAccount = userAccountRepository.save(userAccount);
 
-        UserDto userDto = toDto(userAccount);
+        UserDto userDto = userAccount.toDto();
 
         return new UpdateUserResponse(userDto);
     }
@@ -115,10 +116,6 @@ public class UserAccountService {
                 .roles(userAccount.getRoles().toArray(String[]::new))
                 .disabled(false)
                 .build();
-    }
-
-    private UserDto toDto(UserAccount userAccount) {
-        return new UserDto(userAccount.getLogin(), userAccount.getName(), userAccount.getSurname(), userAccount.getRoles());
     }
 
 }
