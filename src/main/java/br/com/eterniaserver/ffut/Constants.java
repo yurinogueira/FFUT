@@ -11,6 +11,8 @@ public final class Constants {
     public static final String USER_NOT_FOUND = "label.invalid.user-not-found";
     public static final String LOGIN_IN_USE = "label.invalid.login-already-in-use";
     public static final String INVALID_CREDENTIALS = "label.invalid.credentials";
+    public static final String INVALID_NOT_VERIFIED = "label.invalid.not-verified";
+    public static final String EMAIL_SERVICE_ERROR = "label.error.email-service";
 
     public static final String TOKEN_NEEDED = "label.token.needed";
     public static final String LOGIN_NEEDED = "label.login.needed";

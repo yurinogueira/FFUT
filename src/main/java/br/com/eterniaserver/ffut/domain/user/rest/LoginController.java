@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,23 @@ public class LoginController {
     private final JWTService jwtService;
     private final UserAccountRepository userAccountRepository;
 
+    @GetMapping("verify/{token}/")
+    @ResponseStatus(HttpStatus.OK)
+    public void verify(@PathVariable String token) {
+        if (jwtService.isValidToken(token)) {
+            UserAccount userAccount = userAccountRepository
+                    .findByLogin(jwtService.getUserLogin(token))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
+
+            userAccount.setVerified(true);
+
+            userAccountRepository.save(userAccount);
+
+            return;
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_TOKEN);
+    }
     @PostMapping("check/")
     @ResponseStatus(HttpStatus.OK)
     public VerifyTokenResponse verify(@RequestBody @Valid VerifyTokenRequest request) {

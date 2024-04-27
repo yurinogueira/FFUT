@@ -1,6 +1,7 @@
 package br.com.eterniaserver.ffut.domain.user.services;
 
 import br.com.eterniaserver.ffut.Constants;
+import br.com.eterniaserver.ffut.domain.core.services.EmailService;
 import br.com.eterniaserver.ffut.domain.user.dtos.TokenDto;
 import br.com.eterniaserver.ffut.domain.user.entities.UserAccount;
 
@@ -18,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import javax.crypto.SecretKey;
 
@@ -26,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -37,12 +42,21 @@ public class JWTService {
     @Value("${spring.security.jwt.signature-key}")
     private String signatureKey;
 
+    @Value("${application.domain}")
+    private String applicationDomain;
+
     private Optional<SecretKey> secretKey = Optional.empty();
 
+    private final SpringTemplateEngine springTemplateEngine;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public JWTService(PasswordEncoder passwordEncoder) {
+    public JWTService(SpringTemplateEngine springTemplateEngine,
+                      PasswordEncoder passwordEncoder,
+                      EmailService emailService) {
+        this.springTemplateEngine = springTemplateEngine;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public VerifyTokenResponse verify(VerifyTokenRequest request) {
@@ -66,13 +80,18 @@ public class JWTService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_CREDENTIALS);
         }
 
-        long exp = Long.parseLong(expiration);
+        long exp = userAccount.getVerified() ? Long.parseLong(expiration) : 5L;
         LocalDateTime expDate = LocalDateTime.now().plusMinutes(exp);
         Date date = Date.from(expDate.atZone(ZoneId.systemDefault()).toInstant());
 
         String login = userAccount.getLogin();
         String token = Jwts.builder().subject(login).expiration(date).signWith(getSecretKey()).compact();
         String[] roles = userAccount.getRoles().toArray(String[]::new);
+
+        if (!userAccount.getVerified()) {
+            sendVerificationEmail(userAccount, token);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_NOT_VERIFIED);
+        }
 
         return new AuthenticateResponse(new TokenDto(login, token, roles, date));
     }
@@ -87,6 +106,22 @@ public class JWTService {
         LocalDateTime date = expDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         return !LocalDateTime.now().isAfter(date);
+    }
+
+    private void sendVerificationEmail(UserAccount userAccount, String token) throws ResponseStatusException {
+        Context thymeleafContext = new Context();
+        Map<String, Object> variables = new HashMap<>();
+
+        String urlLink = applicationDomain + "/login/verify/" + token + "/";
+        String templateName = "verify-account."  + userAccount.getLocale() + ".html";
+
+        variables.put("link", urlLink);
+
+        thymeleafContext.setVariables(variables);
+
+        String htmlBody = springTemplateEngine.process(templateName, thymeleafContext);
+
+        emailService.sendEmail(userAccount.getLogin(), "Login - Check", htmlBody);
     }
 
     private Claims decodeToken(String token) {

@@ -40,6 +40,10 @@ public class UserAccount {
 
     private LocalDateTime createdAt;
 
+    private Boolean verified = false;
+
+    private Boolean active = true;
+
     private List<String> roles = new ArrayList<>();
 
     public void validate() {

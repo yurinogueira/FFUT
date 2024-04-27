@@ -37,7 +37,7 @@ import java.util.Optional;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityFilter {
+public class SecurityFilterConfiguration {
 
     private final UserAccountService userAccountService;
     private final JWTService jwtService;
