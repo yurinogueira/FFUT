@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/login/")
@@ -33,7 +34,9 @@ public class LoginController {
 
     @GetMapping("verify/{token}/")
     @ResponseStatus(HttpStatus.OK)
-    public void verify(@PathVariable String token) {
+    public ModelAndView verify(@PathVariable String token) {
+        ModelAndView modelAndView = new ModelAndView();
+
         if (jwtService.isValidToken(token)) {
             UserAccount userAccount = userAccountRepository
                     .findByLogin(jwtService.getUserLogin(token))
@@ -43,10 +46,12 @@ public class LoginController {
 
             userAccountRepository.save(userAccount);
 
-            return;
+            modelAndView.setViewName("validated-token.html");
+            return modelAndView;
         }
 
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_TOKEN);
+        modelAndView.setViewName("invalid-token.html");
+        return modelAndView;
     }
     @PostMapping("check/")
     @ResponseStatus(HttpStatus.OK)

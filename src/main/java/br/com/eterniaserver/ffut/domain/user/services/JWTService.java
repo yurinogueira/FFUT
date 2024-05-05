@@ -11,6 +11,7 @@ import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenRequest;
 import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenResponse;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -32,9 +33,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class JWTService {
+
+    private final Logger LOGGER = Logger.getGlobal();
 
     @Value("${spring.security.jwt.expiration}")
     private String expiration;
@@ -101,11 +106,17 @@ public class JWTService {
     }
 
     public boolean isValidToken(String token) {
-        Claims claims = decodeToken(token);
-        Date expDate = claims.getExpiration();
-        LocalDateTime date = expDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        try {
+            Claims claims = decodeToken(token);
 
-        return !LocalDateTime.now().isAfter(date);
+            Date expDate = claims.getExpiration();
+            LocalDateTime date = expDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            return !LocalDateTime.now().isAfter(date);
+        } catch (ExpiredJwtException expiredJwtException) {
+            LOGGER.log(Level.INFO, expiredJwtException.getMessage());
+            return false;
+        }
     }
 
     private void sendVerificationEmail(UserAccount userAccount, String token) throws ResponseStatusException {
