@@ -113,8 +113,8 @@ public class JWTService {
             LocalDateTime date = expDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
             return !LocalDateTime.now().isAfter(date);
-        } catch (ExpiredJwtException expiredJwtException) {
-            LOGGER.log(Level.INFO, expiredJwtException.getMessage());
+        } catch (Exception exception) {
+            LOGGER.log(Level.INFO, exception.getMessage());
             return false;
         }
     }
