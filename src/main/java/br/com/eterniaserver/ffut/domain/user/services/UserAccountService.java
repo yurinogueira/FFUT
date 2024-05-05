@@ -71,8 +71,8 @@ public class UserAccountService {
 
     @Transactional
     public UpdateUserResponse update(UpdateUserRequest request) {
-        boolean updateLogin = request.getLogin().equals(request.getUserDetails().getUsername());
-        if (updateLogin && userAccountRepository.existsByLogin(request.getLogin())) {
+        boolean sameLogin = request.getLogin().equals(request.getUserDetails().getUsername());
+        if (!sameLogin && userAccountRepository.existsByLogin(request.getLogin())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, Constants.LOGIN_IN_USE);
         }
 
