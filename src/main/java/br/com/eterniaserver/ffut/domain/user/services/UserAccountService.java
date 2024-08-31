@@ -2,7 +2,7 @@ package br.com.eterniaserver.ffut.domain.user.services;
 
 import br.com.eterniaserver.ffut.Constants;
 import br.com.eterniaserver.ffut.domain.user.dtos.UserDto;
-import br.com.eterniaserver.ffut.domain.user.entities.UserAccount;
+import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
 import br.com.eterniaserver.ffut.domain.user.enums.BaseRoles;
 import br.com.eterniaserver.ffut.domain.user.models.CreateUserRequest;
 import br.com.eterniaserver.ffut.domain.user.models.CreateUserResponse;
@@ -39,32 +39,32 @@ public class UserAccountService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, Constants.LOGIN_IN_USE);
         }
 
-        UserAccount userAccount = new UserAccount();
+        UserAccountEntity userAccountEntity = new UserAccountEntity();
 
-        userAccount.setLogin(request.login());
-        userAccount.setPassword(encoder.encode(request.password()));
-        userAccount.setName(request.name());
-        userAccount.setSurname(request.surname());
-        userAccount.setLocale(request.locale());
-        userAccount.addRole(BaseRoles.USER);
-        userAccount.setCreatedAt(LocalDateTime.now());
+        userAccountEntity.setLogin(request.login());
+        userAccountEntity.setPassword(encoder.encode(request.password()));
+        userAccountEntity.setName(request.name());
+        userAccountEntity.setSurname(request.surname());
+        userAccountEntity.setLocale(request.locale());
+        userAccountEntity.addRole(BaseRoles.USER);
+        userAccountEntity.setCreatedAt(LocalDateTime.now());
 
-        userAccount.validate();
+        userAccountEntity.validate();
 
-        userAccount = userAccountRepository.save(userAccount);
+        userAccountEntity = userAccountRepository.save(userAccountEntity);
 
-        UserDto userDto = userAccount.toDto();
+        UserDto userDto = userAccountEntity.toDto();
 
         return new CreateUserResponse(userDto);
     }
 
     @Transactional(readOnly = true)
     public ReadUserResponse read(ReadUserRequest request) {
-        UserAccount userAccount = userAccountRepository
+        UserAccountEntity userAccountEntity = userAccountRepository
                 .findByLogin(request.login())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-        UserDto userDto = userAccount.toDto();
+        UserDto userDto = userAccountEntity.toDto();
 
         return new ReadUserResponse(userDto);
     }
@@ -76,19 +76,19 @@ public class UserAccountService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, Constants.LOGIN_IN_USE);
         }
 
-        UserAccount userAccount = userAccountRepository
+        UserAccountEntity userAccountEntity = userAccountRepository
                 .findByLogin(request.getUserDetails().getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-        userAccount.setLogin(request.getLogin());
-        userAccount.setName(request.getName());
-        userAccount.setSurname(request.getSurname());
+        userAccountEntity.setLogin(request.getLogin());
+        userAccountEntity.setName(request.getName());
+        userAccountEntity.setSurname(request.getSurname());
 
-        userAccount.validate();
+        userAccountEntity.validate();
 
-        userAccount = userAccountRepository.save(userAccount);
+        userAccountEntity = userAccountRepository.save(userAccountEntity);
 
-        UserDto userDto = userAccount.toDto();
+        UserDto userDto = userAccountEntity.toDto();
 
         return new UpdateUserResponse(userDto);
     }
@@ -106,15 +106,15 @@ public class UserAccountService {
 
     @Transactional(readOnly = true)
     public UserDetails login(String login) {
-        UserAccount userAccount = userAccountRepository
+        UserAccountEntity userAccountEntity = userAccountRepository
                 .findByLogin(login)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
         return User
                 .builder()
-                .username(userAccount.getLogin())
-                .password(userAccount.getPassword())
-                .roles(userAccount.getRoles().toArray(String[]::new))
+                .username(userAccountEntity.getLogin())
+                .password(userAccountEntity.getPassword())
+                .roles(userAccountEntity.getRoles().toArray(String[]::new))
                 .disabled(false)
                 .build();
     }

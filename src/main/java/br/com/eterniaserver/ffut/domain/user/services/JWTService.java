@@ -3,7 +3,7 @@ package br.com.eterniaserver.ffut.domain.user.services;
 import br.com.eterniaserver.ffut.Constants;
 import br.com.eterniaserver.ffut.domain.core.services.EmailService;
 import br.com.eterniaserver.ffut.domain.user.dtos.TokenDto;
-import br.com.eterniaserver.ffut.domain.user.entities.UserAccount;
+import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
 
 import br.com.eterniaserver.ffut.domain.user.models.AuthenticateRequest;
 import br.com.eterniaserver.ffut.domain.user.models.AuthenticateResponse;
@@ -11,7 +11,6 @@ import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenRequest;
 import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenResponse;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -78,23 +77,23 @@ public class JWTService {
     }
 
     public AuthenticateResponse authenticate(AuthenticateRequest request) {
-        UserAccount userAccount = request.getUserAccount();
+        UserAccountEntity userAccountEntity = request.getUserAccountEntity();
         String password = request.getPassword();
 
-        if (!passwordEncoder.matches(password, userAccount.getPassword())) {
+        if (!passwordEncoder.matches(password, userAccountEntity.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_CREDENTIALS);
         }
 
-        long exp = userAccount.getVerified() ? Long.parseLong(expiration) : 5L;
+        long exp = userAccountEntity.getVerified() ? Long.parseLong(expiration) : 5L;
         LocalDateTime expDate = LocalDateTime.now().plusMinutes(exp);
         Date date = Date.from(expDate.atZone(ZoneId.systemDefault()).toInstant());
 
-        String login = userAccount.getLogin();
+        String login = userAccountEntity.getLogin();
         String token = Jwts.builder().subject(login).expiration(date).signWith(getSecretKey()).compact();
-        String[] roles = userAccount.getRoles().toArray(String[]::new);
+        String[] roles = userAccountEntity.getRoles().toArray(String[]::new);
 
-        if (!userAccount.getVerified()) {
-            sendVerificationEmail(userAccount, token);
+        if (!userAccountEntity.getVerified()) {
+            sendVerificationEmail(userAccountEntity, token);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_NOT_VERIFIED);
         }
 
@@ -119,12 +118,12 @@ public class JWTService {
         }
     }
 
-    private void sendVerificationEmail(UserAccount userAccount, String token) throws ResponseStatusException {
+    private void sendVerificationEmail(UserAccountEntity userAccountEntity, String token) throws ResponseStatusException {
         Context thymeleafContext = new Context();
         Map<String, Object> variables = new HashMap<>();
 
         String urlLink = applicationDomain + "/login/verify/" + token + "/";
-        String templateName = "verify-account."  + userAccount.getLocale() + ".html";
+        String templateName = "verify-account."  + userAccountEntity.getLocale() + ".html";
 
         variables.put("link", urlLink);
 
@@ -132,7 +131,7 @@ public class JWTService {
 
         String htmlBody = springTemplateEngine.process(templateName, thymeleafContext);
 
-        emailService.sendEmail(userAccount.getLogin(), "Login - Check", htmlBody);
+        emailService.sendEmail(userAccountEntity.getLogin(), "Login - Check", htmlBody);
     }
 
     private Claims decodeToken(String token) {
