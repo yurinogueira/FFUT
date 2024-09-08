@@ -31,6 +31,11 @@ public class ProcessRunner {
                   <version>5.9.1</version>
                   <scope>test</scope>
                 </dependency>
+                <dependency>
+                  <groupId>org.pitest</groupId>
+                  <artifactId>pitest-junit5-plugin</artifactId>
+                  <version>1.2.1</version>
+                </dependency>
               </dependencies>
               <build>
                 <plugins>
@@ -74,13 +79,6 @@ public class ProcessRunner {
                         <outputFormat>csv</outputFormat>
                       </outputFormats>
                     </configuration>
-                    <dependencies>
-                      <dependency>
-                      <groupId>org.pitest</groupId>
-                      <artifactId>pitest-junit5-plugin</artifactId>
-                      <version>1.2.1</version>
-                      </dependency>
-                    </dependencies>
                   </plugin>
                 </plugins>
               </build>
