@@ -142,17 +142,11 @@ public class ProcessRunner {
 
         ProcessBuilder builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND);
         Process process = builder.start();
-        process.waitFor(60, TimeUnit.SECONDS);
+        process.waitFor(120, TimeUnit.SECONDS);
 
-        do {
-            if (process.isAlive()) {
-                process.destroy();
-            }
-
-            builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + PITEST_COMMAND);
-            process = builder.start();
-            process.waitFor(120, TimeUnit.SECONDS);
-        } while (process.isAlive());
+        builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + PITEST_COMMAND);
+        process = builder.start();
+        process.waitFor(120, TimeUnit.SECONDS);
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
         jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";

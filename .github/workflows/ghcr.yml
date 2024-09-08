@@ -21,7 +21,10 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: "Test"
+      - name: "Mutation Tests"
+        run: mvn org.pitest:pitest-maven:mutationCoverage
+
+      - name: "Default Tests"
         run: mvn test
 
   package-and-push:
