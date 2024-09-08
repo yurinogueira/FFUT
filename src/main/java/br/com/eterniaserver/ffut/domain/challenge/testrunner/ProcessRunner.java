@@ -140,11 +140,11 @@ public class ProcessRunner {
 
         ProcessBuilder builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND);
         Process process = builder.start();
-        process.waitFor(120, TimeUnit.SECONDS);
+        process.waitFor(300, TimeUnit.SECONDS);
 
         builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + PITEST_COMMAND);
         process = builder.start();
-        process.waitFor(120, TimeUnit.SECONDS);
+        process.waitFor(300, TimeUnit.SECONDS);
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
         jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
