@@ -4,10 +4,7 @@ import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity
 
 import lombok.Getter;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -91,7 +88,7 @@ public class ProcessRunner {
     """;
 
     private static final String MAVEN_COMMAND = "mvn clean package";
-    private static final String PITEST_COMMAND = "mvn org.pitest:pitest-maven:mutationCoverage";
+    private static final String PITEST_COMMAND = "mvn -Dthreads=4 org.pitest:pitest-maven:mutationCoverage";
 
     @Getter
     private String pitestOutputPath;
@@ -143,11 +140,19 @@ public class ProcessRunner {
         printWriter.print(answer.getUserTestCode());
         printWriter.close();
 
-        ProcessBuilder processBuilder = new ProcessBuilder()
-                .command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND + " && " + PITEST_COMMAND);
+        ProcessBuilder builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND);
+        Process process = builder.start();
+        process.waitFor(60, TimeUnit.SECONDS);
 
-        Process process = processBuilder.start();
-        process.waitFor(120, TimeUnit.SECONDS);
+        do {
+            if (process.isAlive()) {
+                process.destroy();
+            }
+
+            builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + PITEST_COMMAND);
+            process = builder.start();
+            process.waitFor(60, TimeUnit.SECONDS);
+        } while (process.isAlive());
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
         jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
