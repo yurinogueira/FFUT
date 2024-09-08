@@ -88,7 +88,7 @@ public class ProcessRunner {
     """;
 
     private static final String MAVEN_COMMAND = "mvn clean package";
-    private static final String PITEST_COMMAND = "mvn -Dthreads=4 org.pitest:pitest-maven:mutationCoverage";
+    private static final String PITEST_COMMAND = "mvn org.pitest:pitest-maven:mutationCoverage";
 
     @Getter
     private String pitestOutputPath;
@@ -151,7 +151,7 @@ public class ProcessRunner {
 
             builder = new ProcessBuilder().command("bash", "-c", "cd " + answerPath + " && " + PITEST_COMMAND);
             process = builder.start();
-            process.waitFor(60, TimeUnit.SECONDS);
+            process.waitFor(120, TimeUnit.SECONDS);
         } while (process.isAlive());
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
