@@ -21,6 +21,7 @@ public final class Constants {
     public static final String SURNAME_NEEDED = "label.surname.needed";
     public static final String LOCALE_NEEDED = "label.locale.needed";
 
+    public static final String CHALLENGE_NOT_FOUND = "label.invalid.challenge-not-found";
 
     private Constants() {
         throw new IllegalStateException(UTILITY_CLASS);

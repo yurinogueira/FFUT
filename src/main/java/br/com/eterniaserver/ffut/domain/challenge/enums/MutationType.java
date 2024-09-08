@@ -1,6 +1,7 @@
 package br.com.eterniaserver.ffut.domain.challenge.enums;
 
 public enum MutationType {
+
     CONDITIONAL_BOUNDARY,
     INCREMENTS,
     INVERT_NEGATIVES,

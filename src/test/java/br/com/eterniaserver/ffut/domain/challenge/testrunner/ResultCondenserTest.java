@@ -1,8 +1,7 @@
-package br.com.eterniaserver.ffut.testrunner;
+package br.com.eterniaserver.ffut.domain.challenge.testrunner;
 
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 import br.com.eterniaserver.ffut.domain.challenge.models.MutationResultModel;
-import br.com.eterniaserver.ffut.domain.challenge.testrunner.ResultCondenser;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

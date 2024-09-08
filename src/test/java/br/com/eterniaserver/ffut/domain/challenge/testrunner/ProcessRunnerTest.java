@@ -1,7 +1,7 @@
-package br.com.eterniaserver.ffut.testrunner;
+package br.com.eterniaserver.ffut.domain.challenge.testrunner;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
-import br.com.eterniaserver.ffut.domain.challenge.testrunner.ProcessRunner;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

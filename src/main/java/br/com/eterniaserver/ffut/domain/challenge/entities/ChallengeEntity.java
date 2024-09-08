@@ -1,7 +1,9 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeRank;
+
 import lombok.Data;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -26,7 +28,11 @@ public class ChallengeEntity {
 
     private List<ChallengeRank> rank = new ArrayList<>();
 
-    private void AddToRank(ChallengeAnswerEntity answer) {
+    public void incrementChallengeVersion() {
+        challengeVersion++;
+    }
+
+    public void AddToRank(ChallengeAnswerEntity answer) {
         ChallengeRank challengeRank = new ChallengeRank();
 
         challengeRank.setUserId(answer.getUserId());

@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ProcessRunner {
 
@@ -124,7 +125,7 @@ public class ProcessRunner {
         List<Process> processes = ProcessBuilder.startPipeline(builders);
 
         for (Process process : processes) {
-            process.waitFor(60, java.util.concurrent.TimeUnit.SECONDS);
+            process.waitFor(60, TimeUnit.SECONDS);
         }
 
         pitestOutputPath = "/tmp/" + answer.getId() + "/target/pit-reports/mutations.csv";
