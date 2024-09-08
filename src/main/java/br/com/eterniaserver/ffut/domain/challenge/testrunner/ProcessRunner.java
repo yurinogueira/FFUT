@@ -1,12 +1,16 @@
 package br.com.eterniaserver.ffut.domain.challenge.testrunner;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
+
 import lombok.Getter;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class ProcessRunner {
@@ -87,6 +91,9 @@ public class ProcessRunner {
             </project>
     """;
 
+    private static final String MAVEN_COMMAND = "mvn clean package";
+    private static final String PITEST_COMMAND = "mvn org.pitest:pitest-maven:mutationCoverage";
+
     @Getter
     private String pitestOutputPath;
     @Getter
@@ -105,34 +112,46 @@ public class ProcessRunner {
     }
 
     private void run() throws IOException, InterruptedException {
-        List<ProcessBuilder> builders = new ArrayList<>();
+        Path answerPath = Files.createTempDirectory(answer.getId());
 
-        String tempDir = System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator();
+        Path pomPath = Files.createFile(answerPath.resolve("pom.xml"));
+        File pomFile = pomPath.toFile();
 
-        builders.add(new ProcessBuilder().command(
-                "bash",
-                "-c",
-                "mkdir -p " + tempDir + answer.getId() +
-                        " && echo '" + POM_FILE + "' > " + tempDir + answer.getId() + "/pom.xml" +
-                        " && mkdir -p " + tempDir + answer.getId() + "/src/main/java" +
-                        " && mkdir -p " + tempDir + answer.getId() + "/src/test/java" +
-                        " && echo '" + answer.getChallengeCode() + "' > " + tempDir + answer.getId() + "/src/main/java/Main.java" +
-                        " && echo '" + answer.getUserTestCode() + "' > " + tempDir + answer.getId() + "/src/test/java/MainTest.java"
-        ));
-        builders.add(new ProcessBuilder().command(
-                "bash",
-                "-c",
-                "cd " + tempDir + answer.getId() + " && mvn clean package && mvn org.pitest:pitest-maven:mutationCoverage"
-        ));
+        FileWriter fileWriter = new FileWriter(pomFile);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        printWriter.print(POM_FILE);
+        printWriter.close();
 
-        List<Process> processes = ProcessBuilder.startPipeline(builders);
+        Path sourcePath = Files.createDirectory(answerPath.resolve("src"));
 
-        for (Process process : processes) {
-            process.waitFor(60, TimeUnit.SECONDS);
-        }
+        Path mainPath = Files.createDirectory(sourcePath.resolve("main"));
+        Path mainJavaPath = Files.createDirectory(mainPath.resolve("java"));
+        Path mainFilePath = Files.createFile(mainJavaPath.resolve("Main.java"));
+        File mainFile = mainFilePath.toFile();
 
-        pitestOutputPath = tempDir + answer.getId() + "/target/pit-reports/mutations.csv";
-        jacocoOutputPath = tempDir + answer.getId() + "/target/site/jacoco/jacoco.csv";
-        resultOutputPath = tempDir + answer.getId() + "/target/surefire-reports/MainTest.txt";
+        fileWriter = new FileWriter(mainFile);
+        printWriter = new PrintWriter(fileWriter);
+        printWriter.print(answer.getChallengeCode());
+        printWriter.close();
+
+        Path testPath = Files.createDirectory(sourcePath.resolve("test"));
+        Path testJavaPath = Files.createDirectories(testPath.resolve("java"));
+        Path testFilePath = Files.createFile(testJavaPath.resolve("MainTest.java"));
+        File testFile = testFilePath.toFile();
+
+        fileWriter = new FileWriter(testFile);
+        printWriter = new PrintWriter(fileWriter);
+        printWriter.print(answer.getUserTestCode());
+        printWriter.close();
+
+        ProcessBuilder processBuilder = new ProcessBuilder()
+                .command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND + " && " + PITEST_COMMAND);
+
+        Process process = processBuilder.start();
+        process.waitFor(60, TimeUnit.SECONDS);
+
+        pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
+        jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
+        resultOutputPath = answerPath + "/target/surefire-reports/MainTest.txt";
     }
 }
