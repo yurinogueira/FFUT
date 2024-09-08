@@ -1,7 +1,7 @@
 package br.com.eterniaserver.ffut.domain.user.models;
 
 import br.com.eterniaserver.ffut.Constants;
-import br.com.eterniaserver.ffut.domain.user.entities.UserAccount;
+import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,7 +22,7 @@ public class AuthenticateRequest {
     private final String password;
 
     @JsonIgnore
-    private UserAccount userAccount;
+    private UserAccountEntity userAccountEntity;
 
     private AuthenticateRequest(String login, String password) {
         this.login = login;

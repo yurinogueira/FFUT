@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 @Data
 @Document(collection = "users")
-public class UserAccount {
+public class UserAccountEntity {
 
     private static final Pattern EMAIL_REGEX = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,8}$");
 
@@ -45,6 +45,10 @@ public class UserAccount {
     private Boolean active = true;
 
     private List<String> roles = new ArrayList<>();
+
+    public String getUsername() {
+        return name + " " + surname;
+    }
 
     public void validate() {
         if (roles.stream().anyMatch(role -> BaseRoles.fromString(role).isEmpty())) {

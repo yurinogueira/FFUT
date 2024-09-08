@@ -1,7 +1,7 @@
 package br.com.eterniaserver.ffut.domain.user.rest;
 
 import br.com.eterniaserver.ffut.Constants;
-import br.com.eterniaserver.ffut.domain.user.entities.UserAccount;
+import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
 import br.com.eterniaserver.ffut.domain.user.models.AuthenticateRequest;
 import br.com.eterniaserver.ffut.domain.user.models.AuthenticateResponse;
 import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenRequest;
@@ -38,13 +38,13 @@ public class LoginController {
         ModelAndView modelAndView = new ModelAndView();
 
         if (jwtService.isValidToken(token)) {
-            UserAccount userAccount = userAccountRepository
+            UserAccountEntity userAccountEntity = userAccountRepository
                     .findByLogin(jwtService.getUserLogin(token))
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-            userAccount.setVerified(true);
+            userAccountEntity.setVerified(true);
 
-            userAccountRepository.save(userAccount);
+            userAccountRepository.save(userAccountEntity);
 
             modelAndView.setViewName("validated-token.html");
             return modelAndView;
@@ -62,11 +62,11 @@ public class LoginController {
     @PostMapping("auth/")
     @ResponseStatus(HttpStatus.OK)
     public AuthenticateResponse authenticate(@RequestBody @Valid AuthenticateRequest request) {
-        UserAccount userAccount = userAccountRepository
+        UserAccountEntity userAccountEntity = userAccountRepository
                 .findByLogin(request.getLogin())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.USER_NOT_FOUND));
 
-        request.setUserAccount(userAccount);
+        request.setUserAccountEntity(userAccountEntity);
 
         return jwtService.authenticate(request);
     }
