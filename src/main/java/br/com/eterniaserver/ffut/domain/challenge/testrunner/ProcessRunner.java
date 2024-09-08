@@ -4,6 +4,7 @@ import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity
 import lombok.Getter;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -106,20 +107,22 @@ public class ProcessRunner {
     private void run() throws IOException, InterruptedException {
         List<ProcessBuilder> builders = new ArrayList<>();
 
+        String tempDir = System.getProperty("java.io.tmpdir") + FileSystems.getDefault().getSeparator();
+
         builders.add(new ProcessBuilder().command(
                 "bash",
                 "-c",
-                "mkdir -p /tmp/" + answer.getId() +
-                        " && echo '" + POM_FILE + "' > /tmp/" + answer.getId() + "/pom.xml" +
-                        " && mkdir -p /tmp/" + answer.getId() + "/src/main/java" +
-                        " && mkdir -p /tmp/" + answer.getId() + "/src/test/java" +
-                        " && echo '" + answer.getChallengeCode() + "' > /tmp/" + answer.getId() + "/src/main/java/Main.java" +
-                        " && echo '" + answer.getUserTestCode() + "' > /tmp/" + answer.getId() + "/src/test/java/MainTest.java"
+                "mkdir -p " + tempDir + answer.getId() +
+                        " && echo '" + POM_FILE + "' > " + tempDir + answer.getId() + "/pom.xml" +
+                        " && mkdir -p " + tempDir + answer.getId() + "/src/main/java" +
+                        " && mkdir -p " + tempDir + answer.getId() + "/src/test/java" +
+                        " && echo '" + answer.getChallengeCode() + "' > " + tempDir + answer.getId() + "/src/main/java/Main.java" +
+                        " && echo '" + answer.getUserTestCode() + "' > " + tempDir + answer.getId() + "/src/test/java/MainTest.java"
         ));
         builders.add(new ProcessBuilder().command(
                 "bash",
                 "-c",
-                "cd /tmp/" + answer.getId() + " && mvn clean package && mvn org.pitest:pitest-maven:mutationCoverage"
+                "cd " + tempDir + answer.getId() + " && mvn clean package && mvn org.pitest:pitest-maven:mutationCoverage"
         ));
 
         List<Process> processes = ProcessBuilder.startPipeline(builders);
@@ -128,8 +131,8 @@ public class ProcessRunner {
             process.waitFor(60, TimeUnit.SECONDS);
         }
 
-        pitestOutputPath = "/tmp/" + answer.getId() + "/target/pit-reports/mutations.csv";
-        jacocoOutputPath = "/tmp/" + answer.getId() + "/target/site/jacoco/jacoco.csv";
-        resultOutputPath = "/tmp/" + answer.getId() + "/target/surefire-reports/MainTest.txt";
+        pitestOutputPath = tempDir + answer.getId() + "/target/pit-reports/mutations.csv";
+        jacocoOutputPath = tempDir + answer.getId() + "/target/site/jacoco/jacoco.csv";
+        resultOutputPath = tempDir + answer.getId() + "/target/surefire-reports/MainTest.txt";
     }
 }
