@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -148,7 +147,7 @@ public class ProcessRunner {
                 .command("bash", "-c", "cd " + answerPath + " && " + MAVEN_COMMAND + " && " + PITEST_COMMAND);
 
         Process process = processBuilder.start();
-        process.waitFor(60, TimeUnit.SECONDS);
+        process.waitFor(120, TimeUnit.SECONDS);
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
         jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
