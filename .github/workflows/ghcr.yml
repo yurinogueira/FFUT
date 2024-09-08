@@ -21,11 +21,8 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: "Mutation Tests"
-        run: mvn org.pitest:pitest-maven:mutationCoverage
-
-      - name: "Default Tests"
-        run: mvn test
+      - name: "Tests"
+        run: mvn clean package && mvn org.pitest:pitest-maven:mutationCoverage
 
   package-and-push:
     name: Push Docker Image
