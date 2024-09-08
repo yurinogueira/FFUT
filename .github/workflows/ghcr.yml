@@ -4,12 +4,17 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - development
   workflow_dispatch:
 
 jobs:
   build-and-test:
     name: Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: "Checkout GitHub Action"
@@ -31,6 +36,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+
+    if: startsWith(github.head_ref, 'main')
 
     steps:
       - name: "Checkout GitHub Action"
