@@ -20,8 +20,12 @@ jobs:
         with:
           java-version: "22"
           distribution: "temurin"
+          cache: "maven"
 
-      - name: "Tests"
+      - name: "Run Mutation Testing"
+        run: mvn test-compile org.pitest:pitest-maven:mutationCoverage
+
+      - name: "Package and Test"
         run: mvn clean package
 
   package-and-push:

@@ -116,11 +116,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-junit5-plugin</artifactId>
-            <version>1.2.1</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -142,16 +137,17 @@
                 <artifactId>pitest-maven</artifactId>
                 <version>1.16.1</version>
                 <configuration>
-                    <targetClasses>
-                        <param>Main</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>MainTest</param>
-                    </targetTests>
                     <outputFormats>
                         <outputFormat>csv</outputFormat>
                     </outputFormats>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
