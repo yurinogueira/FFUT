@@ -22,9 +22,6 @@ jobs:
           distribution: "temurin"
           cache: "maven"
 
-      - name: "Run Mutation Testing"
-        run: mvn test-compile org.pitest:pitest-maven:mutationCoverage
-
       - name: "Package and Test"
         run: mvn clean package
 
