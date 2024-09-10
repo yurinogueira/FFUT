@@ -50,8 +50,8 @@ public class ResultCondenser {
     private final String pitestOutputPath;
 
     public ResultCondenser(String resultOutputPath,
-                           String jacocoOutputPath,
-                           String pitestOutputPath) {
+            String jacocoOutputPath,
+            String pitestOutputPath) {
         this.resultOutputPath = resultOutputPath;
         this.jacocoOutputPath = jacocoOutputPath;
         this.pitestOutputPath = pitestOutputPath;
@@ -64,7 +64,66 @@ public class ResultCondenser {
     }
 
     public void generateScore() {
+        int totalTests = resultModel.getTestsSuccess() + resultModel.getTestsFailed() + resultModel.getTestsError();
+        double testScore = totalTests > 0 ? (double) resultModel.getTestsSuccess() / totalTests : 0.0;
 
+        double instructionScore = calculateCoverageScore(resultModel.getInstructionCoverage(),
+                resultModel.getInstructionMissed());
+        double branchScore = calculateCoverageScore(resultModel.getBranchCoverage(), resultModel.getBranchMissed());
+        double lineScore = calculateCoverageScore(resultModel.getLineCoverage(), resultModel.getLineMissed());
+        double complexityScore = calculateCoverageScore(resultModel.getComplexityCoverage(),
+                resultModel.getComplexityMissed());
+        double methodScore = calculateCoverageScore(resultModel.getMethodCoverage(), resultModel.getMethodMissed());
+
+        double mutationScore = calculateMutationScore(resultModel.getMutationResults());
+
+        double finalScore = (0.2 * testScore) +
+                (0.1 * instructionScore) +
+                (0.1 * branchScore) +
+                (0.1 * lineScore) +
+                (0.2 * complexityScore) +
+                (0.1 * methodScore) +
+                (0.2 * mutationScore);
+
+        resultModel.setScore(100 * finalScore);
+    }
+
+    private double calculateCoverageScore(int covered, int missed) {
+        int total = covered + missed;
+        return total > 0 ? (double) covered / total : 0.0;
+    }
+
+    private double calculateMutationScore(List<MutationResultModel> mutationResults) {
+        if (mutationResults.isEmpty()) {
+            return 0.0;
+        }
+
+        double totalWeight = 0.0;
+        double weightedKilledCount = 0.0;
+
+        for (MutationResultModel mutation : mutationResults) {
+            double weight = getMutationWeight(mutation.getMutationType());
+            totalWeight += weight;
+            if (mutation.getIsKilled()) {
+                weightedKilledCount += weight;
+            }
+        }
+
+        return totalWeight > 0 ? weightedKilledCount / totalWeight : 0.0;
+    }
+
+    private double getMutationWeight(MutationType mutationType) {
+        return switch (mutationType) {
+            case CONDITIONAL_BOUNDARY -> 1.0;
+            case NEGATE_CONDITIONALS -> 0.9;
+            case MATH -> 0.8;
+            case INCREMENTS, INVERT_NEGATIVES -> 0.7;
+            case VOID_METHOD_CALLS -> 0.6;
+            case EMPTY_RETURNS, NULL_RETURNS -> 0.5;
+            case PRIMITIVE_RETURNS -> 0.4;
+            case TRUE_RETURNS, FALSE_RETURNS -> 0.3;
+            default -> 0.1;
+        };
     }
 
     private void readPitestMutationData() {
