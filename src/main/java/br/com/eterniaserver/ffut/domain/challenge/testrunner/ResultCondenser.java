@@ -83,9 +83,9 @@ public class ResultCondenser {
                 (0.1 * lineScore) +
                 (0.2 * complexityScore) +
                 (0.1 * methodScore) +
-                (0.3 * mutationScore);
+                (0.2 * mutationScore);
 
-        resultModel.setScore(finalScore);
+        resultModel.setScore(100 * finalScore);
     }
 
     private double calculateCoverageScore(int covered, int missed) {
@@ -122,7 +122,7 @@ public class ResultCondenser {
             case EMPTY_RETURNS, NULL_RETURNS -> 0.5;
             case PRIMITIVE_RETURNS -> 0.4;
             case TRUE_RETURNS, FALSE_RETURNS -> 0.3;
-            default -> 0.5;
+            default -> 0.1;
         };
     }
 
