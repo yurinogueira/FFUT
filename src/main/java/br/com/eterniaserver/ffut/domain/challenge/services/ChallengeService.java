@@ -31,7 +31,7 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void create(ChallengeDto data) {
+    public ChallengeEntity create(ChallengeDto data) {
         ChallengeEntity entity = new ChallengeEntity();
 
         entity.setName(data.name());
@@ -40,6 +40,8 @@ public class ChallengeService {
         entity.setChallengeVersion(0);
 
         challengeRepository.save(entity);
+
+        return entity;
     }
 
     @Transactional

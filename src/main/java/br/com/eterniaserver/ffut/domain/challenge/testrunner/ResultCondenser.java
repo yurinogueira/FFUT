@@ -65,14 +65,23 @@ public class ResultCondenser {
 
     public void generateScore() {
         int totalTests = resultModel.getTestsSuccess() + resultModel.getTestsFailed() + resultModel.getTestsError();
+
         double testScore = totalTests > 0 ? (double) resultModel.getTestsSuccess() / totalTests : 0.0;
 
-        double instructionScore = calculateCoverageScore(resultModel.getInstructionCoverage(),
-                resultModel.getInstructionMissed());
+        double instructionScore = calculateCoverageScore(
+                resultModel.getInstructionCoverage(),
+                resultModel.getInstructionMissed()
+        );
+
         double branchScore = calculateCoverageScore(resultModel.getBranchCoverage(), resultModel.getBranchMissed());
+
         double lineScore = calculateCoverageScore(resultModel.getLineCoverage(), resultModel.getLineMissed());
-        double complexityScore = calculateCoverageScore(resultModel.getComplexityCoverage(),
-                resultModel.getComplexityMissed());
+
+        double complexityScore = calculateCoverageScore(
+                resultModel.getComplexityCoverage(),
+                resultModel.getComplexityMissed()
+        );
+
         double methodScore = calculateCoverageScore(resultModel.getMethodCoverage(), resultModel.getMethodMissed());
 
         double mutationScore = calculateMutationScore(resultModel.getMutationResults());
