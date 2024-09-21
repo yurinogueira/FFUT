@@ -1,8 +1,13 @@
 package br.com.eterniaserver.ffut.domain.challenge.services;
 
 import br.com.eterniaserver.ffut.Constants;
-import br.com.eterniaserver.ffut.domain.challenge.dtos.ChallengeDto;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity.ChallengeRankEntity;
+import br.com.eterniaserver.ffut.domain.challenge.models.CreateChallengeRequest;
+import br.com.eterniaserver.ffut.domain.challenge.models.ListChallengeResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeResponse.ReadChallengeRankResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.UpdateChallengeRequest;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 
 import lombok.AllArgsConstructor;
@@ -13,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
 public class ChallengeService {
@@ -22,21 +25,23 @@ public class ChallengeService {
     private final ChallengeRepository challengeRepository;
 
     @Transactional
-    public List<ChallengeDto> list(int page, int size) {
-        return challengeRepository
-                .findAll(PageRequest.of(page, size))
-                .stream()
-                .map(entity -> new ChallengeDto(entity.getName(), entity.getDescription(), entity.getCode()))
-                .toList();
+    public ListChallengeResponse list(int page, int size) {
+        return new ListChallengeResponse(
+                challengeRepository
+                        .findAll(PageRequest.of(page, size))
+                        .stream()
+                        .map(this::toResponse)
+                        .toList()
+        );
     }
 
     @Transactional
-    public ChallengeEntity create(ChallengeDto data) {
+    public ChallengeEntity create(CreateChallengeRequest request) {
         ChallengeEntity entity = new ChallengeEntity();
 
-        entity.setName(data.name());
-        entity.setDescription(data.description());
-        entity.setCode(data.code());
+        entity.setName(request.name());
+        entity.setDescription(request.description());
+        entity.setCode(request.code());
         entity.setChallengeVersion(0);
 
         challengeRepository.save(entity);
@@ -45,14 +50,14 @@ public class ChallengeService {
     }
 
     @Transactional
-    public ChallengeDto read(String id) {
+    public ReadChallengeResponse read(String id) {
         ChallengeEntity entity = getById(id);
 
-        return new ChallengeDto(entity.getName(), entity.getDescription(), entity.getCode());
+        return toResponse(entity);
     }
 
     @Transactional
-    public void update(String id, ChallengeDto data) {
+    public void update(String id, UpdateChallengeRequest data) {
         ChallengeEntity entity = getById(id);
 
         entity.setName(data.name());
@@ -75,5 +80,24 @@ public class ChallengeService {
         return challengeRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.CHALLENGE_NOT_FOUND));
+    }
+
+    private ReadChallengeResponse toResponse(ChallengeEntity entity) {
+        return new ReadChallengeResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getChallengeVersion(),
+                entity.getCode(),
+                entity.getRank().stream().map(this::toResponse).toList()
+        );
+    }
+
+    private ReadChallengeRankResponse toResponse(ChallengeRankEntity rankEntity) {
+        return new ReadChallengeRankResponse(
+                rankEntity.getUserId(),
+                rankEntity.getUsername(),
+                rankEntity.getChallengeResultEntity().getScore()
+        );
     }
 }
