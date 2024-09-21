@@ -1,4 +1,4 @@
-package br.com.eterniaserver.ffut.domain.challenge.testrunner;
+package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;
@@ -10,9 +10,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.nio.charset.StandardCharsets;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -50,8 +48,8 @@ public class ResultCondenser {
     private final String pitestOutputPath;
 
     public ResultCondenser(String resultOutputPath,
-            String jacocoOutputPath,
-            String pitestOutputPath) {
+                           String jacocoOutputPath,
+                           String pitestOutputPath) {
         this.resultOutputPath = resultOutputPath;
         this.jacocoOutputPath = jacocoOutputPath;
         this.pitestOutputPath = pitestOutputPath;
@@ -131,7 +129,6 @@ public class ResultCondenser {
             case EMPTY_RETURNS, NULL_RETURNS -> 0.5;
             case PRIMITIVE_RETURNS -> 0.4;
             case TRUE_RETURNS, FALSE_RETURNS -> 0.3;
-            default -> 0.1;
         };
     }
 
@@ -229,4 +226,5 @@ public class ResultCondenser {
     private int parseInt(String value) {
         return Integer.parseInt(value);
     }
+
 }

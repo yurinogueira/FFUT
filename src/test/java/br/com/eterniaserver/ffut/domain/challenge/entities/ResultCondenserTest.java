@@ -1,4 +1,4 @@
-package br.com.eterniaserver.ffut.domain.challenge.testrunner;
+package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;

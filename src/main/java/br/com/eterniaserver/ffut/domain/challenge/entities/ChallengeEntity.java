@@ -32,7 +32,7 @@ public class ChallengeEntity {
         challengeVersion++;
     }
 
-    public void AddToRank(ChallengeAnswerEntity answer) {
+    public void addToRank(ChallengeAnswerEntity answer) {
         ChallengeRank challengeRank = new ChallengeRank();
 
         challengeRank.setUserId(answer.getUserId());
@@ -40,6 +40,9 @@ public class ChallengeEntity {
         challengeRank.setChallengeResultModel(answer.getChallengeResult());
 
         rank.add(challengeRank);
-        rank.sort(Comparator.comparingDouble(r -> r.getChallengeResultModel().getScore()));
+
+        Comparator<ChallengeRank> comparator = Comparator.comparingDouble(o -> o.getChallengeResultModel().getScore());
+
+        rank.sort(comparator.reversed());
     }
 }

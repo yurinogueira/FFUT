@@ -1,13 +1,11 @@
-package br.com.eterniaserver.ffut.domain.challenge.testrunner;
-
-import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
+package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-class ProcessRunnerTest {
+class TestRunnerServiceTest {
 
     @Test
     void testProcessSimpleTest() {
