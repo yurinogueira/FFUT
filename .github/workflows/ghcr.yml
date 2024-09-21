@@ -24,7 +24,7 @@ jobs:
 
       - name: "Package and Test"
         # Skip ProcessRunnerTest to avoid issues with GitHub Actions
-        run: mvn clean package -Dtest=\!ProcessRunnerTest
+        run: mvn clean package -Dtest=\!TestRunnerServiceTest
 
   package-and-push:
     name: Push Docker Image
