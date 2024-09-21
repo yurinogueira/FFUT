@@ -1,7 +1,7 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeRank;
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity.ChallengeRankEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class ChallengeEntityTest {
         setChallengeRanks();
 
         ChallengeAnswerEntity newAnswer = new ChallengeAnswerEntity();
-        ChallengeResultModel newResult = new ChallengeResultModel();
+        ChallengeResultEntity newResult = new ChallengeResultEntity();
         
         newResult.setScore(100.0D);
         
@@ -40,29 +40,29 @@ class ChallengeEntityTest {
 
         // Assert
 
-        List<ChallengeRank> rank = challengeEntity.getRank();
+        List<ChallengeRankEntity> rank = challengeEntity.getRank();
 
         Assertions.assertEquals(3, rank.size());
 
-        Assertions.assertEquals(100.0D, rank.getFirst().getChallengeResultModel().getScore());
-        Assertions.assertEquals(75.0D, rank.get(1).getChallengeResultModel().getScore());
-        Assertions.assertEquals(50.0D, rank.getLast().getChallengeResultModel().getScore());
+        Assertions.assertEquals(100.0D, rank.getFirst().getChallengeResultEntity().getScore());
+        Assertions.assertEquals(75.0D, rank.get(1).getChallengeResultEntity().getScore());
+        Assertions.assertEquals(50.0D, rank.getLast().getChallengeResultEntity().getScore());
     }
 
     private void setChallengeRanks() {
-        ChallengeRank oldFirst = new ChallengeRank();
-        ChallengeResultModel oldFirstResult = new ChallengeResultModel();
+        ChallengeRankEntity oldFirst = new ChallengeRankEntity();
+        ChallengeResultEntity oldFirstResult = new ChallengeResultEntity();
 
         oldFirstResult.setScore(75.0D);
 
-        oldFirst.setChallengeResultModel(oldFirstResult);
+        oldFirst.setChallengeResultEntity(oldFirstResult);
 
-        ChallengeRank oldSecond = new ChallengeRank();
-        ChallengeResultModel oldSecondResult = new ChallengeResultModel();
+        ChallengeRankEntity oldSecond = new ChallengeRankEntity();
+        ChallengeResultEntity oldSecondResult = new ChallengeResultEntity();
 
         oldSecondResult.setScore(50.0D);
 
-        oldSecond.setChallengeResultModel(oldSecondResult);
+        oldSecond.setChallengeResultEntity(oldSecondResult);
 
         challengeEntity.setRank(new ArrayList<>(List.of(oldFirst, oldSecond)));
     }

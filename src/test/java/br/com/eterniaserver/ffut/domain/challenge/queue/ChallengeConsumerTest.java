@@ -2,8 +2,8 @@ package br.com.eterniaserver.ffut.domain.challenge.queue;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
-import br.com.eterniaserver.ffut.domain.challenge.entities.ProcessRunner;
-import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenser;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ProcessRunnerEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenserEntity;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import br.com.eterniaserver.ffut.domain.challenge.services.TestRunnerService;
@@ -63,8 +63,8 @@ class ChallengeConsumerTest {
         String challengeId = "HA341GF1HA24A5VA5124";
 
         ChallengeAnswerEntity challengeAnswer = Mockito.mock(ChallengeAnswerEntity.class);
-        ProcessRunner processRunner = Mockito.mock(ProcessRunner.class);
-        ResultCondenser resultCondenser = Mockito.mock(ResultCondenser.class);
+        ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
+        ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
 
         Mockito.when(challengeAnswer.getId())
                 .thenReturn(challengeAnswerId);
@@ -101,8 +101,8 @@ class ChallengeConsumerTest {
         String challengeId = "HA341GF1HA24A5VA5124";
 
         ChallengeAnswerEntity challengeAnswer = Mockito.mock(ChallengeAnswerEntity.class);
-        ProcessRunner processRunner = Mockito.mock(ProcessRunner.class);
-        ResultCondenser resultCondenser = Mockito.mock(ResultCondenser.class);
+        ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
+        ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
 
         Mockito.when(challengeAnswer.getId())
                 .thenReturn(challengeAnswerId);
@@ -136,8 +136,8 @@ class ChallengeConsumerTest {
         String challengeId = "HA341GF1HA24A5VA5124";
 
         ChallengeAnswerEntity challengeAnswer = Mockito.mock(ChallengeAnswerEntity.class);
-        ProcessRunner processRunner = Mockito.mock(ProcessRunner.class);
-        ResultCondenser resultCondenser = Mockito.mock(ResultCondenser.class);
+        ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
+        ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
         ChallengeEntity challenge = Mockito.mock(ChallengeEntity.class);
 
         Mockito.when(challengeAnswer.getId())

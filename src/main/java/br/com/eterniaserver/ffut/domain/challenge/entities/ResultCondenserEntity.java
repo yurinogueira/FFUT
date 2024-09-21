@@ -1,8 +1,8 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;
-import br.com.eterniaserver.ffut.domain.challenge.models.MutationResultModel;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
 
 import lombok.Getter;
 
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ResultCondenser {
+public class ResultCondenserEntity {
 
-    private static final Logger LOGGER = Logger.getLogger(ResultCondenser.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ResultCondenserEntity.class.getName());
 
     private static final int TESTS_RUNS = 0;
     private static final int TESTS_FAILED = 1;
@@ -41,15 +41,15 @@ public class ResultCondenser {
     private static final int MUTATION_STATUS = 5;
 
     @Getter
-    private final ChallengeResultModel resultModel = new ChallengeResultModel();
+    private final ChallengeResultEntity resultModel = new ChallengeResultEntity();
 
     private final String resultOutputPath;
     private final String jacocoOutputPath;
     private final String pitestOutputPath;
 
-    public ResultCondenser(String resultOutputPath,
-                           String jacocoOutputPath,
-                           String pitestOutputPath) {
+    public ResultCondenserEntity(String resultOutputPath,
+                                 String jacocoOutputPath,
+                                 String pitestOutputPath) {
         this.resultOutputPath = resultOutputPath;
         this.jacocoOutputPath = jacocoOutputPath;
         this.pitestOutputPath = pitestOutputPath;
@@ -100,7 +100,7 @@ public class ResultCondenser {
         return total > 0 ? (double) covered / total : 0.0;
     }
 
-    private double calculateMutationScore(List<MutationResultModel> mutationResults) {
+    private double calculateMutationScore(List<MutationResultEntity> mutationResults) {
         if (mutationResults.isEmpty()) {
             return 0.0;
         }
@@ -108,7 +108,7 @@ public class ResultCondenser {
         double totalWeight = 0.0;
         double weightedKilledCount = 0.0;
 
-        for (MutationResultModel mutation : mutationResults) {
+        for (MutationResultEntity mutation : mutationResults) {
             double weight = getMutationWeight(mutation.getMutationType());
             totalWeight += weight;
             if (mutation.getIsKilled()) {
@@ -135,7 +135,7 @@ public class ResultCondenser {
     private void readPitestMutationData() {
         File file = new File(pitestOutputPath);
 
-        List<MutationResultModel> mutationResults = new ArrayList<>();
+        List<MutationResultEntity> mutationResults = new ArrayList<>();
 
         try {
             List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
@@ -147,7 +147,7 @@ public class ResultCondenser {
 
                 String[] data = line.split(",");
 
-                MutationResultModel mutationResult = new MutationResultModel();
+                MutationResultEntity mutationResult = new MutationResultEntity();
 
                 mutationResult.setMutationType(MutationType.getEnum(data[MUTATION_TYPE]));
                 mutationResult.setMutationInfo(data[MUTATION_INFO]);

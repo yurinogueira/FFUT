@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessRunner {
+public class ProcessRunnerEntity {
 
     private static final String POM_FILE = """
             <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -98,7 +98,7 @@ public class ProcessRunner {
 
     private final ChallengeAnswerEntity answer;
 
-    public ProcessRunner(ChallengeAnswerEntity answer) {
+    public ProcessRunnerEntity(ChallengeAnswerEntity answer) {
         this.answer = answer;
 
         try {

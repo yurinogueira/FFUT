@@ -2,8 +2,8 @@ package br.com.eterniaserver.ffut.domain.challenge.queue;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
-import br.com.eterniaserver.ffut.domain.challenge.entities.ProcessRunner;
-import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenser;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ProcessRunnerEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenserEntity;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import br.com.eterniaserver.ffut.domain.challenge.services.TestRunnerService;
@@ -54,9 +54,9 @@ public class ChallengeConsumer {
     }
 
     private void condenseAndProcess(ChallengeAnswerEntity challengeAnswer) {
-        ProcessRunner processRunner = testRunnerService.run(challengeAnswer);
+        ProcessRunnerEntity processRunner = testRunnerService.run(challengeAnswer);
 
-        ResultCondenser resultCondenser = testRunnerService.condense(processRunner);
+        ResultCondenserEntity resultCondenser = testRunnerService.condense(processRunner);
 
         resultCondenser.condenseResults();
         resultCondenser.generateScore();

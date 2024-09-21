@@ -1,11 +1,12 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;
+import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Optional;
+import java.util.List;
 
 @Data
 @Document(collection = "users")
@@ -26,10 +27,53 @@ public class ChallengeAnswerEntity {
 
     private String userTestCode;
 
-    private ChallengeResultModel challengeResult;
+    private ChallengeResultEntity challengeResult;
 
-    public Optional<ChallengeResultModel> getResult() {
-        return Optional.ofNullable(challengeResult);
+    @Data
+    public static class ChallengeResultEntity {
+
+        private Double score;
+
+        private Integer testsSuccess;
+
+        private Integer testsFailed;
+
+        private Integer testsError;
+
+        private Integer instructionCoverage;
+
+        private Integer instructionMissed;
+
+        private Integer branchCoverage;
+
+        private Integer branchMissed;
+
+        private Integer lineCoverage;
+
+        private Integer lineMissed;
+
+        private Integer complexityCoverage;
+
+        private Integer complexityMissed;
+
+        private Integer methodCoverage;
+
+        private Integer methodMissed;
+
+        private List<MutationResultEntity> mutationResults;
+
+    }
+
+    @Data
+    public static class MutationResultEntity {
+
+        private MutationType mutationType;
+
+        private String mutationInfo;
+
+        private Boolean isKilled;
+
+        private Integer line;
     }
 
 }

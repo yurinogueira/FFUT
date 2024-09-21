@@ -1,8 +1,8 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeResultModel;
-import br.com.eterniaserver.ffut.domain.challenge.models.MutationResultModel;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ResultCondenserTest {
+class ResultCondenserEntityTest {
 
     private static final String RESULT_OUTPUT_PATH = "src/test/resources/MainTest.txt";
     private static final String JACOCO_OUTPUT_PATH = "src/test/resources/jacoco.csv";
@@ -18,7 +18,7 @@ class ResultCondenserTest {
 
     @Test
     void validateDefaultResultsCondenser() {
-        ResultCondenser resultCondenser = new ResultCondenser(
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
                 RESULT_OUTPUT_PATH,
                 JACOCO_OUTPUT_PATH,
                 PITEST_OUTPUT_PATH
@@ -34,7 +34,7 @@ class ResultCondenserTest {
 
     @Test
     void validateJacocoResultsCondenser() {
-        ResultCondenser resultCondenser = new ResultCondenser(
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
                 RESULT_OUTPUT_PATH,
                 JACOCO_OUTPUT_PATH,
                 PITEST_OUTPUT_PATH
@@ -57,7 +57,7 @@ class ResultCondenserTest {
 
     @Test
     void validatePitestMutationsResultsCondenser() {
-        ResultCondenser resultCondenser = new ResultCondenser(
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
                 RESULT_OUTPUT_PATH,
                 JACOCO_OUTPUT_PATH,
                 PITEST_OUTPUT_PATH
@@ -68,8 +68,8 @@ class ResultCondenserTest {
         Assertions.assertNotNull(resultCondenser.getResultModel());
         Assertions.assertEquals(2, resultCondenser.getResultModel().getMutationResults().size());
 
-        MutationResultModel first = resultCondenser.getResultModel().getMutationResults().get(0);
-        MutationResultModel last = resultCondenser.getResultModel().getMutationResults().get(1);
+        MutationResultEntity first = resultCondenser.getResultModel().getMutationResults().get(0);
+        MutationResultEntity last = resultCondenser.getResultModel().getMutationResults().get(1);
 
         Assertions.assertEquals(MutationType.MATH, first.getMutationType());
         Assertions.assertEquals("sum", first.getMutationInfo());
@@ -84,13 +84,13 @@ class ResultCondenserTest {
 
      @Test
     void validateGenerateScore() {
-        ResultCondenser resultCondenser = new ResultCondenser(
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
                 RESULT_OUTPUT_PATH,
                 JACOCO_OUTPUT_PATH,
                 PITEST_OUTPUT_PATH
         );
 
-        ChallengeResultModel resultModel = resultCondenser.getResultModel();
+        ChallengeResultEntity resultModel = resultCondenser.getResultModel();
         resultModel.setTestsSuccess(4);
         resultModel.setTestsFailed(1);
         resultModel.setTestsError(1);
@@ -106,14 +106,14 @@ class ResultCondenserTest {
         resultModel.setMethodCoverage(75);
         resultModel.setMethodMissed(25);
 
-        List<MutationResultModel> mutationResults = new ArrayList<>();
-        MutationResultModel mutation1 = new MutationResultModel();
+        List<MutationResultEntity> mutationResults = new ArrayList<>();
+        MutationResultEntity mutation1 = new MutationResultEntity();
         mutation1.setMutationType(MutationType.MATH);
         mutation1.setMutationInfo("addition");
         mutation1.setIsKilled(true);
         mutation1.setLine(5);
 
-        MutationResultModel mutation2 = new MutationResultModel();
+        MutationResultEntity mutation2 = new MutationResultEntity();
         mutation2.setMutationType(MutationType.PRIMITIVE_RETURNS);
         mutation2.setMutationInfo("return");
         mutation2.setIsKilled(false);

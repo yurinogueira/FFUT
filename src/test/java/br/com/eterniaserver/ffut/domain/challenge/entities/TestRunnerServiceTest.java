@@ -45,7 +45,7 @@ class TestRunnerServiceTest {
                 }
                 """);
 
-        ProcessRunner runner = new ProcessRunner(answer);
+        ProcessRunnerEntity runner = new ProcessRunnerEntity(answer);
 
         File pitestExpected = new File(runner.getPitestOutputPath());
         File jacocoExpected = new File(runner.getJacocoOutputPath());

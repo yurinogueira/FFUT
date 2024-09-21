@@ -1,6 +1,6 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeRank;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 
 import lombok.Data;
 
@@ -26,23 +26,34 @@ public class ChallengeEntity {
 
     private String code;
 
-    private List<ChallengeRank> rank = new ArrayList<>();
+    private List<ChallengeRankEntity> rank = new ArrayList<>();
 
     public void incrementChallengeVersion() {
         challengeVersion++;
     }
 
     public void addToRank(ChallengeAnswerEntity answer) {
-        ChallengeRank challengeRank = new ChallengeRank();
+        ChallengeRankEntity challengeRankEntity = new ChallengeRankEntity();
 
-        challengeRank.setUserId(answer.getUserId());
-        challengeRank.setUsername(answer.getUsername());
-        challengeRank.setChallengeResultModel(answer.getChallengeResult());
+        challengeRankEntity.setUserId(answer.getUserId());
+        challengeRankEntity.setUsername(answer.getUsername());
+        challengeRankEntity.setChallengeResultEntity(answer.getChallengeResult());
 
-        rank.add(challengeRank);
+        rank.add(challengeRankEntity);
 
-        Comparator<ChallengeRank> comparator = Comparator.comparingDouble(o -> o.getChallengeResultModel().getScore());
+        Comparator<ChallengeRankEntity> comparator = Comparator.comparingDouble(o -> o.getChallengeResultEntity().getScore());
 
         rank.sort(comparator.reversed());
     }
+
+    @Data
+    public static class ChallengeRankEntity {
+
+        private String userId;
+
+        private String username;
+
+        private ChallengeResultEntity challengeResultEntity;
+    }
+
 }
