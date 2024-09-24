@@ -1,13 +1,11 @@
-package br.com.eterniaserver.ffut.domain.challenge.testrunner;
-
-import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
+package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-class ProcessRunnerTest {
+class TestRunnerServiceTest {
 
     @Test
     void testProcessSimpleTest() {
@@ -47,7 +45,7 @@ class ProcessRunnerTest {
                 }
                 """);
 
-        ProcessRunner runner = new ProcessRunner(answer);
+        ProcessRunnerEntity runner = new ProcessRunnerEntity(answer);
 
         File pitestExpected = new File(runner.getPitestOutputPath());
         File jacocoExpected = new File(runner.getJacocoOutputPath());

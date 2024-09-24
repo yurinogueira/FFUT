@@ -1,7 +1,10 @@
 package br.com.eterniaserver.ffut.domain.challenge.services;
 
-import br.com.eterniaserver.ffut.domain.challenge.dtos.ChallengeDto;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
+import br.com.eterniaserver.ffut.domain.challenge.models.CreateChallengeRequest;
+import br.com.eterniaserver.ffut.domain.challenge.models.ListChallengeResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.UpdateChallengeRequest;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 
 import org.junit.jupiter.api.Assertions;
@@ -52,22 +55,24 @@ class ChallengeServiceTest {
         Mockito.when(repository.findAll(pageRequest)).thenReturn(page);
 
         // Act
-        List<ChallengeDto> result = service.list(0, 10);
+        ListChallengeResponse result = service.list(0, 10);
+
+        List<ReadChallengeResponse> list = result.challenges();
 
         // Assert
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals("First", result.getFirst().name());
-        Assertions.assertEquals("First description", result.getFirst().description());
-        Assertions.assertEquals("First code", result.getFirst().code());
-        Assertions.assertEquals("Second", result.getLast().name());
-        Assertions.assertEquals("Second description", result.getLast().description());
-        Assertions.assertEquals("Second code", result.getLast().code());
+        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals("First", list.getFirst().name());
+        Assertions.assertEquals("First description", list.getFirst().description());
+        Assertions.assertEquals("First code", list.getFirst().code());
+        Assertions.assertEquals("Second", list.getLast().name());
+        Assertions.assertEquals("Second description", list.getLast().description());
+        Assertions.assertEquals("Second code", list.getLast().code());
     }
 
     @Test
     void testCreate() {
         // Arrange
-        ChallengeDto challengeDto = new ChallengeDto("First", "First description", "First code");
+        CreateChallengeRequest challengeDto = new CreateChallengeRequest("First", "First description", "First code");
 
         ChallengeEntity challengeEntity = new ChallengeEntity();
         challengeEntity.setName("First");
@@ -94,7 +99,7 @@ class ChallengeServiceTest {
         Mockito.when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
 
         // Act
-        ChallengeDto result = service.read("#FIRST1");
+        ReadChallengeResponse result = service.read("#FIRST1");
 
         // Assert
         Assertions.assertEquals("First", result.name());
@@ -114,7 +119,11 @@ class ChallengeServiceTest {
     @Test
     void testUpdate() {
         // Arrange
-        ChallengeDto challengeDto = new ChallengeDto("First", "First description", "First code");
+        UpdateChallengeRequest challengeDto = new UpdateChallengeRequest(
+                "First",
+                "First description",
+                "First code"
+        );
 
         ChallengeEntity entity = new ChallengeEntity();
         entity.setId("#FIRST1");
@@ -135,7 +144,11 @@ class ChallengeServiceTest {
     @Test
     void testUpdateNotFound() {
         // Arrange
-        ChallengeDto challengeDto = new ChallengeDto("First", "First description", "First code");
+        UpdateChallengeRequest challengeDto = new UpdateChallengeRequest(
+                "First",
+                "First description",
+                "First code"
+        );
 
         Mockito.when(repository.findById("#FIRST1")).thenReturn(Optional.empty());
 
