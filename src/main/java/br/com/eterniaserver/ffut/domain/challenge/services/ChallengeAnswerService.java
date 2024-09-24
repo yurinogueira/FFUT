@@ -90,7 +90,7 @@ public class ChallengeAnswerService {
         ChallengeResultEntity entity = optional.get();
 
         return Optional.of(
-                new ReadChallengeAnswerResponse.ReadChallengeResultResponse(
+                new ReadChallengeResultResponse(
                         entity.getScore(),
                         entity.getTestsSuccess(),
                         entity.getTestsFailed(),
@@ -111,7 +111,7 @@ public class ChallengeAnswerService {
     }
 
     private ReadMutationResultResponse toResponse(MutationResultEntity entity) {
-        return new ReadChallengeAnswerResponse.ReadMutationResultResponse(
+        return new ReadMutationResultResponse(
                 entity.getMutationType(),
                 entity.getMutationInfo(),
                 entity.getIsKilled(),
