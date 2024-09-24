@@ -1,6 +1,6 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
-import br.com.eterniaserver.ffut.domain.challenge.models.ChallengeRank;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 
 import lombok.Data;
 
@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Document(collection = "challenge")
@@ -26,20 +27,40 @@ public class ChallengeEntity {
 
     private String code;
 
-    private List<ChallengeRank> rank = new ArrayList<>();
+    private List<ChallengeRankEntity> rank = new ArrayList<>();
 
     public void incrementChallengeVersion() {
         challengeVersion++;
     }
 
-    public void AddToRank(ChallengeAnswerEntity answer) {
-        ChallengeRank challengeRank = new ChallengeRank();
+    public void addToRank(ChallengeAnswerEntity answer) {
+        Optional<ChallengeResultEntity> resultOptional = answer.getChallengeResult();
+        if (resultOptional.isPresent()) {
+            ChallengeResultEntity result = resultOptional.get();
 
-        challengeRank.setUserId(answer.getUserId());
-        challengeRank.setUsername(answer.getUsername());
-        challengeRank.setChallengeResultModel(answer.getChallengeResult());
+            ChallengeRankEntity challengeRankEntity = new ChallengeRankEntity();
 
-        rank.add(challengeRank);
-        rank.sort(Comparator.comparingDouble(r -> r.getChallengeResultModel().getScore()));
+            challengeRankEntity.setUserId(answer.getUserId());
+            challengeRankEntity.setUsername(answer.getUsername());
+            challengeRankEntity.setChallengeResultEntity(result);
+
+            rank.removeIf(entity -> answer.getUserId().equals(entity.getUserId()));
+            rank.add(challengeRankEntity);
+
+            Comparator<ChallengeRankEntity> comparator = Comparator.comparingDouble(o -> o.getChallengeResultEntity().getScore());
+
+            rank.sort(comparator.reversed());
+        }
     }
+
+    @Data
+    public static class ChallengeRankEntity {
+
+        private String userId;
+
+        private String username;
+
+        private ChallengeResultEntity challengeResultEntity;
+    }
+
 }

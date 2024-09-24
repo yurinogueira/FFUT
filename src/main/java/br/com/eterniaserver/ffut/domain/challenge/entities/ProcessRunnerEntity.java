@@ -1,15 +1,16 @@
-package br.com.eterniaserver.ffut.domain.challenge.testrunner;
-
-import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
+package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import lombok.Getter;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessRunner {
+public class ProcessRunnerEntity {
 
     private static final String POM_FILE = """
             <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -97,7 +98,7 @@ public class ProcessRunner {
 
     private final ChallengeAnswerEntity answer;
 
-    public ProcessRunner(ChallengeAnswerEntity answer) {
+    public ProcessRunnerEntity(ChallengeAnswerEntity answer) {
         this.answer = answer;
 
         try {
@@ -150,4 +151,5 @@ public class ProcessRunner {
         jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
         resultOutputPath = answerPath + "/target/surefire-reports/MainTest.txt";
     }
+
 }

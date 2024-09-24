@@ -23,6 +23,8 @@ public final class Constants {
 
     public static final String CHALLENGE_NOT_FOUND = "label.invalid.challenge-not-found";
 
+    public static final String ANSWER_NOT_FOUND = "label.invalid.answer-not-found";
+
     private Constants() {
         throw new IllegalStateException(UTILITY_CLASS);
     }
