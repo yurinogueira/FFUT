@@ -49,12 +49,43 @@ class ChallengeEntityTest {
         Assertions.assertEquals(50.0D, rank.getLast().getChallengeResultEntity().getScore());
     }
 
+    @Test
+    void shouldReplaceOldRankingWhenSort() {
+        // Arrange
+
+        setChallengeRanks();
+
+        ChallengeAnswerEntity alreadyAnsweredNewResult = new ChallengeAnswerEntity();
+        ChallengeResultEntity newResult = new ChallengeResultEntity();
+
+        newResult.setScore(51.5D);
+
+        alreadyAnsweredNewResult.setChallengeResult(newResult);
+        alreadyAnsweredNewResult.setUserId("789");
+        alreadyAnsweredNewResult.setUsername("test");
+
+        // Act
+
+        challengeEntity.addToRank(alreadyAnsweredNewResult);
+
+        // Assert
+
+        List<ChallengeRankEntity> rank = challengeEntity.getRank();
+
+        Assertions.assertEquals(2, rank.size());
+
+        Assertions.assertEquals(75.0D, rank.getFirst().getChallengeResultEntity().getScore());
+        Assertions.assertEquals(51.5D, rank.getLast().getChallengeResultEntity().getScore());
+        Assertions.assertEquals("test", rank.getLast().getUsername());
+    }
+
     private void setChallengeRanks() {
         ChallengeRankEntity oldFirst = new ChallengeRankEntity();
         ChallengeResultEntity oldFirstResult = new ChallengeResultEntity();
 
         oldFirstResult.setScore(75.0D);
 
+        oldFirst.setUserId("456");
         oldFirst.setChallengeResultEntity(oldFirstResult);
 
         ChallengeRankEntity oldSecond = new ChallengeRankEntity();
@@ -62,6 +93,7 @@ class ChallengeEntityTest {
 
         oldSecondResult.setScore(50.0D);
 
+        oldSecond.setUserId("789");
         oldSecond.setChallengeResultEntity(oldSecondResult);
 
         challengeEntity.setRank(new ArrayList<>(List.of(oldFirst, oldSecond)));

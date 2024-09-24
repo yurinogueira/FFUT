@@ -1,0 +1,134 @@
+package br.com.eterniaserver.ffut.domain.challenge.services;
+
+import br.com.eterniaserver.ffut.Constants;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
+import br.com.eterniaserver.ffut.domain.challenge.enums.AnswerStatus;
+import br.com.eterniaserver.ffut.domain.challenge.models.*;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeAnswerResponse.ReadMutationResultResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeAnswerResponse.ReadChallengeResultResponse;
+import br.com.eterniaserver.ffut.domain.challenge.queue.ChallengeProducer;
+import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
+
+import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
+import lombok.AllArgsConstructor;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
+
+@Service
+@AllArgsConstructor
+public class ChallengeAnswerService {
+
+    private final ChallengeRepository challengeRepository;
+
+    private final ChallengeAnswerRepository answerRepository;
+
+    private final ChallengeProducer challengeProducer;
+
+    @Transactional
+    public ListChallengeAnswerResponse list(ListChallengeAnswerRequest request) {
+        return new ListChallengeAnswerResponse(
+                answerRepository
+                        .findAllByChallengeIdAndUserId(request.challengeId(), request.userId())
+                        .stream()
+                        .map(this::toResponse)
+                        .toList()
+        );
+    }
+
+    @Transactional
+    public CreateChallengeAnswerResponse create(CreateChallengeAnswerRequest request) {
+        ChallengeEntity challenge = getChallengeById(request.challengeId());
+
+        ChallengeAnswerEntity entity = new ChallengeAnswerEntity();
+
+        entity.setChallengeId(request.challengeId());
+        entity.setUserId(request.userId());
+        entity.setUsername(request.username());
+        entity.setStatus(AnswerStatus.PENDING);
+        entity.setChallengeVersion(challenge.getChallengeVersion());
+        entity.setChallengeCode(challenge.getCode());
+        entity.setUserTestCode(request.testAnswer());
+
+        answerRepository.save(entity);
+
+        challengeProducer.sendChallengeToWorker(entity.getId());
+
+        return new CreateChallengeAnswerResponse(entity.getId(), entity.getStatus());
+    }
+
+    @Transactional
+    public ReadChallengeAnswerResponse read(String id) {
+        ChallengeAnswerEntity entity = getById(id);
+
+        return toResponse(entity);
+    }
+
+    private ReadChallengeAnswerResponse toResponse(ChallengeAnswerEntity entity) {
+        return new ReadChallengeAnswerResponse(
+                entity.getId(),
+                entity.getUserId(),
+                entity.getChallengeCode(),
+                entity.getUserTestCode(),
+                entity.getStatus(),
+                toResponse(entity.getChallengeResult())
+        );
+    }
+
+    private Optional<ReadChallengeResultResponse> toResponse(Optional<ChallengeResultEntity> optional) {
+        if (optional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        ChallengeResultEntity entity = optional.get();
+
+        return Optional.of(
+                new ReadChallengeAnswerResponse.ReadChallengeResultResponse(
+                        entity.getScore(),
+                        entity.getTestsSuccess(),
+                        entity.getTestsFailed(),
+                        entity.getTestsError(),
+                        entity.getInstructionCoverage(),
+                        entity.getInstructionMissed(),
+                        entity.getBranchCoverage(),
+                        entity.getBranchMissed(),
+                        entity.getLineCoverage(),
+                        entity.getLineMissed(),
+                        entity.getComplexityCoverage(),
+                        entity.getComplexityMissed(),
+                        entity.getMethodCoverage(),
+                        entity.getMethodMissed(),
+                        entity.getMutationResults().stream().map(this::toResponse).toList()
+                )
+        );
+    }
+
+    private ReadMutationResultResponse toResponse(MutationResultEntity entity) {
+        return new ReadChallengeAnswerResponse.ReadMutationResultResponse(
+                entity.getMutationType(),
+                entity.getMutationInfo(),
+                entity.getIsKilled(),
+                entity.getLine()
+        );
+    }
+
+    private ChallengeAnswerEntity getById(String id) {
+        return answerRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.ANSWER_NOT_FOUND));
+    }
+
+    private ChallengeEntity getChallengeById(String id) {
+        return challengeRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constants.CHALLENGE_NOT_FOUND));
+    }
+
+}

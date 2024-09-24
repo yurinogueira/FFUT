@@ -1,5 +1,6 @@
 package br.com.eterniaserver.ffut.domain.challenge.entities;
 
+import br.com.eterniaserver.ffut.domain.challenge.enums.AnswerStatus;
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 
 import lombok.Data;
@@ -7,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Document(collection = "users")
@@ -21,6 +23,8 @@ public class ChallengeAnswerEntity {
 
     private String username;
 
+    private AnswerStatus status;
+
     private Integer challengeVersion;
 
     private String challengeCode;
@@ -28,6 +32,10 @@ public class ChallengeAnswerEntity {
     private String userTestCode;
 
     private ChallengeResultEntity challengeResult;
+
+    public Optional<ChallengeResultEntity> getChallengeResult() {
+        return Optional.ofNullable(challengeResult);
+    }
 
     @Data
     public static class ChallengeResultEntity {

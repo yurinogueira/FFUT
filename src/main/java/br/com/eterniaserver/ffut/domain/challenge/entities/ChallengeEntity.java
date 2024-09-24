@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Document(collection = "challenge")
@@ -33,17 +34,23 @@ public class ChallengeEntity {
     }
 
     public void addToRank(ChallengeAnswerEntity answer) {
-        ChallengeRankEntity challengeRankEntity = new ChallengeRankEntity();
+        Optional<ChallengeResultEntity> resultOptional = answer.getChallengeResult();
+        if (resultOptional.isPresent()) {
+            ChallengeResultEntity result = resultOptional.get();
 
-        challengeRankEntity.setUserId(answer.getUserId());
-        challengeRankEntity.setUsername(answer.getUsername());
-        challengeRankEntity.setChallengeResultEntity(answer.getChallengeResult());
+            ChallengeRankEntity challengeRankEntity = new ChallengeRankEntity();
 
-        rank.add(challengeRankEntity);
+            challengeRankEntity.setUserId(answer.getUserId());
+            challengeRankEntity.setUsername(answer.getUsername());
+            challengeRankEntity.setChallengeResultEntity(result);
 
-        Comparator<ChallengeRankEntity> comparator = Comparator.comparingDouble(o -> o.getChallengeResultEntity().getScore());
+            rank.removeIf(entity -> answer.getUserId().equals(entity.getUserId()));
+            rank.add(challengeRankEntity);
 
-        rank.sort(comparator.reversed());
+            Comparator<ChallengeRankEntity> comparator = Comparator.comparingDouble(o -> o.getChallengeResultEntity().getScore());
+
+            rank.sort(comparator.reversed());
+        }
     }
 
     @Data
