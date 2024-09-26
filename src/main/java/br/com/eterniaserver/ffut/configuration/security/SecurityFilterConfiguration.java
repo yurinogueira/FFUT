@@ -107,6 +107,11 @@ public class SecurityFilterConfiguration {
                     request.requestMatchers(HttpMethod.GET, "/user/**").hasRole(BaseRoles.ADMIN.name());
                     request.requestMatchers(HttpMethod.PUT, "/user/").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.DELETE, "/user/**").hasRole(BaseRoles.ADMIN.name());
+                    request.requestMatchers("/answer/**").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.GET, "/challenge/").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.GET, "/challenge/**").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.POST, "/challenge/").hasRole(BaseRoles.ADMIN.name());
+                    request.requestMatchers(HttpMethod.PUT, "/challenge/**").hasRole(BaseRoles.ADMIN.name());
                     request.anyRequest().denyAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
