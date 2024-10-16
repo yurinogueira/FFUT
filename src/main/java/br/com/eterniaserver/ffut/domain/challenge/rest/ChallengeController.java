@@ -17,7 +17,7 @@ public class ChallengeController {
 
     private final ChallengeService service;
 
-    @GetMapping
+    @GetMapping("list/")
     @ResponseStatus(HttpStatus.OK)
     public ListChallengeResponse list(@RequestParam Optional<Integer> page, @RequestParam Optional<Integer> size) {
         return service.list(page.orElse(0), size.orElse(10));

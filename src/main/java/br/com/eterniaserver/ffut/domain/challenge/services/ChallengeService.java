@@ -31,7 +31,8 @@ public class ChallengeService {
                         .findAll(PageRequest.of(page, size))
                         .stream()
                         .map(this::toResponse)
-                        .toList()
+                        .toList(),
+                challengeRepository.count()
         );
     }
 
