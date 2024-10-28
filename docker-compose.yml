@@ -1,0 +1,9 @@
+services:
+  rabbitmq:
+    container_name: 'tuff-rabbit'
+    image: 'rabbitmq:latest'
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=secrettuff'
+      - 'RABBITMQ_DEFAULT_USER=tuff'
+    ports:
+      - '5672:5672'

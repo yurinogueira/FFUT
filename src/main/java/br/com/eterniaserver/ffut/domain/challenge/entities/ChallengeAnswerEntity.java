@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
-@Document(collection = "users")
+@Document(collection = "answers")
 public class ChallengeAnswerEntity {
 
     @Id
