@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto:21-alpine AS BUILD
+FROM maven:3-amazoncorretto-21-alpine AS BUILD
 
 LABEL org.opencontainers.image.source="https://github.com/yurinogueira/FFUT"
 
