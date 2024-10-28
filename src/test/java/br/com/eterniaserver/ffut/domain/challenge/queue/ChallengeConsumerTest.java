@@ -95,7 +95,7 @@ class ChallengeConsumerTest {
         Mockito.verify(resultCondenser, Mockito.times(1))
                 .generateScore();
 
-        Mockito.verify(challengeAnswerRepositoryMock, Mockito.times(1))
+        Mockito.verify(challengeAnswerRepositoryMock, Mockito.times(2))
                 .save(challengeAnswer);
     }
 
