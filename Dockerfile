@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto-21-alpine AS BUILD
+FROM maven:3-amazoncorretto-21-alpine AS build
 
 LABEL org.opencontainers.image.source="https://github.com/yurinogueira/FFUT"
 
@@ -18,4 +18,7 @@ ARG JAR_FILE=/app/target/ffut-*.jar
 
 COPY --from=build ${JAR_FILE} app.jar
 
-CMD ["java", "-jar", "/app.jar", "--spring.config.location=file:/application.properties"]
+COPY warmup warmup
+COPY startup.sh startup.sh
+
+ENTRYPOINT ["bash", "/startup.sh"]
