@@ -15,6 +15,7 @@ import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRe
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import lombok.AllArgsConstructor;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,26 @@ public class ChallengeAnswerService {
     private final ChallengeProducer challengeProducer;
 
     @Transactional
+    public ListChallengeAnswerResponse listByUser(int page, int size, String userId) {
+        return new ListChallengeAnswerResponse(
+                answerRepository
+                        .findAllByUserId(PageRequest.of(page, size), userId)
+                        .stream()
+                        .map(this::toResponse)
+                        .toList(),
+                challengeRepository.count()
+        );
+    }
+
+    @Transactional
     public ListChallengeAnswerResponse list(ListChallengeAnswerRequest request) {
         return new ListChallengeAnswerResponse(
                 answerRepository
                         .findAllByChallengeIdAndUserId(request.challengeId(), request.userId())
                         .stream()
                         .map(this::toResponse)
-                        .toList()
+                        .toList(),
+                answerRepository.count()
         );
     }
 
@@ -74,8 +88,9 @@ public class ChallengeAnswerService {
     private ReadChallengeAnswerResponse toResponse(ChallengeAnswerEntity entity) {
         return new ReadChallengeAnswerResponse(
                 entity.getId(),
-                entity.getUserId(),
-                entity.getChallengeCode(),
+                entity.getChallengeVersion(),
+                entity.getChallengeId(),
+                entity.getChallengeName(),
                 entity.getUserTestCode(),
                 entity.getStatus(),
                 toResponse(entity.getChallengeResult())

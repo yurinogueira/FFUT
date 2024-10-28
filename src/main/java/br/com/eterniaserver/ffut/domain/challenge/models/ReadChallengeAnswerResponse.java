@@ -8,8 +8,9 @@ import java.util.Optional;
 
 public record ReadChallengeAnswerResponse(
         String answerId,
-        String challengeVersion,
-        String challengeCode,
+        Integer challengeVersion,
+        String challengeId,
+        String challengeName,
         String userTest,
         AnswerStatus status,
         Optional<ReadChallengeResultResponse> challengeResult

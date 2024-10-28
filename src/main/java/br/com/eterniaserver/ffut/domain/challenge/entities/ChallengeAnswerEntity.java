@@ -19,6 +19,8 @@ public class ChallengeAnswerEntity {
 
     private String challengeId;
 
+    private String challengeName;
+
     private String userId;
 
     private String username;
