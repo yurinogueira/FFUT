@@ -1,6 +1,7 @@
 package br.com.eterniaserver.ffut.domain.challenge.services;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
+import br.com.eterniaserver.ffut.domain.challenge.enums.ChallengeDifficulty;
 import br.com.eterniaserver.ffut.domain.challenge.models.CreateChallengeRequest;
 import br.com.eterniaserver.ffut.domain.challenge.models.ListChallengeResponse;
 import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeResponse;
@@ -72,13 +73,14 @@ class ChallengeServiceTest {
     @Test
     void testCreate() {
         // Arrange
-        CreateChallengeRequest challengeDto = new CreateChallengeRequest("First", "First description", "First code");
+        CreateChallengeRequest challengeDto = new CreateChallengeRequest("First", "First description", "First code", ChallengeDifficulty.EASY);
 
         ChallengeEntity challengeEntity = new ChallengeEntity();
         challengeEntity.setName("First");
         challengeEntity.setDescription("First description");
         challengeEntity.setCode("First code");
         challengeEntity.setChallengeVersion(0);
+        challengeEntity.setDifficulty(ChallengeDifficulty.EASY);
 
         // Act
         service.create(challengeDto);
@@ -122,7 +124,8 @@ class ChallengeServiceTest {
         UpdateChallengeRequest challengeDto = new UpdateChallengeRequest(
                 "First",
                 "First description",
-                "First code"
+                "First code",
+                ChallengeDifficulty.EASY
         );
 
         ChallengeEntity entity = new ChallengeEntity();
@@ -131,6 +134,7 @@ class ChallengeServiceTest {
         entity.setDescription("First description");
         entity.setCode("First code");
         entity.setChallengeVersion(0);
+        entity.setDifficulty(ChallengeDifficulty.EASY);
 
         Mockito.when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
 
@@ -147,7 +151,8 @@ class ChallengeServiceTest {
         UpdateChallengeRequest challengeDto = new UpdateChallengeRequest(
                 "First",
                 "First description",
-                "First code"
+                "First code",
+                ChallengeDifficulty.EASY
         );
 
         Mockito.when(repository.findById("#FIRST1")).thenReturn(Optional.empty());
