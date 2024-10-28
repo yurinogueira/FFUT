@@ -7,6 +7,7 @@ import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenserEntity
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import br.com.eterniaserver.ffut.domain.challenge.services.TestRunnerService;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,11 +66,16 @@ class ChallengeConsumerTest {
         ChallengeAnswerEntity challengeAnswer = Mockito.mock(ChallengeAnswerEntity.class);
         ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
         ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
+        ChallengeResultEntity challengeResult = Mockito.mock(ChallengeResultEntity.class);
 
         Mockito.when(challengeAnswer.getId())
                 .thenReturn(challengeAnswerId);
         Mockito.when(challengeAnswer.getChallengeId())
                 .thenReturn(challengeId);
+        Mockito.when(resultCondenser.getResultModel())
+                .thenReturn(challengeResult);
+        Mockito.when(challengeResult.getScore())
+                .thenReturn(0D);
 
         Mockito.when(challengeAnswerRepositoryMock.findById(challengeAnswerId))
                 .thenReturn(Optional.of(challengeAnswer));
@@ -103,11 +109,16 @@ class ChallengeConsumerTest {
         ChallengeAnswerEntity challengeAnswer = Mockito.mock(ChallengeAnswerEntity.class);
         ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
         ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
+        ChallengeResultEntity challengeResult = Mockito.mock(ChallengeResultEntity.class);
 
         Mockito.when(challengeAnswer.getId())
                 .thenReturn(challengeAnswerId);
         Mockito.when(challengeAnswer.getChallengeId())
                 .thenReturn(challengeId);
+        Mockito.when(resultCondenser.getResultModel())
+                .thenReturn(challengeResult);
+        Mockito.when(challengeResult.getScore())
+                .thenReturn(0D);
 
         Mockito.when(challengeAnswerRepositoryMock.findById(challengeAnswerId))
                 .thenReturn(Optional.of(challengeAnswer));
@@ -139,11 +150,16 @@ class ChallengeConsumerTest {
         ProcessRunnerEntity processRunner = Mockito.mock(ProcessRunnerEntity.class);
         ResultCondenserEntity resultCondenser = Mockito.mock(ResultCondenserEntity.class);
         ChallengeEntity challenge = Mockito.mock(ChallengeEntity.class);
+        ChallengeResultEntity challengeResult = Mockito.mock(ChallengeResultEntity.class);
 
         Mockito.when(challengeAnswer.getId())
                 .thenReturn(challengeAnswerId);
         Mockito.when(challengeAnswer.getChallengeId())
                 .thenReturn(challengeId);
+        Mockito.when(resultCondenser.getResultModel())
+                .thenReturn(challengeResult);
+        Mockito.when(challengeResult.getScore())
+                .thenReturn(0D);
 
         Mockito.when(challengeAnswerRepositoryMock.findById(challengeAnswerId))
                 .thenReturn(Optional.of(challengeAnswer));
