@@ -9,7 +9,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM maven:3-amazoncorretto:21-alpine
+FROM maven:3-amazoncorretto-21-alpine
 
 LABEL maintainer="personal@yurinogueira.dev.br"
 LABEL vendor="TUFF"
