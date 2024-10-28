@@ -1,4 +1,4 @@
-FROM maven:3 AS BUILD
+FROM maven:3-amazoncorretto:21-alpine AS BUILD
 
 LABEL org.opencontainers.image.source="https://github.com/yurinogueira/FFUT"
 
@@ -9,7 +9,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM maven:3
+FROM maven:3-amazoncorretto:21-alpine
 
 LABEL maintainer="personal@yurinogueira.dev.br"
 LABEL vendor="TUFF"
