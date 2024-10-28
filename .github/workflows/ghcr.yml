@@ -34,8 +34,6 @@ jobs:
       contents: read
       packages: write
 
-    if: startsWith(github.head_ref, 'main')
-
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
