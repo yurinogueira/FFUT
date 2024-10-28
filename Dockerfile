@@ -9,7 +9,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+FROM maven:3
 
 LABEL maintainer="personal@yurinogueira.dev.br"
 LABEL vendor="TUFF"
