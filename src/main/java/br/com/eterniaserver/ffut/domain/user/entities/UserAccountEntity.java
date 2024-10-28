@@ -71,6 +71,8 @@ public class UserAccountEntity {
     public UserDto toDto() {
         return new UserDto(
                 getLogin(),
+                getId(),
+                getUsername(),
                 getName(),
                 getSurname(),
                 getRoles(),

@@ -4,6 +4,7 @@ import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ProcessRunnerEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ResultCondenserEntity;
+import br.com.eterniaserver.ffut.domain.challenge.enums.AnswerStatus;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import br.com.eterniaserver.ffut.domain.challenge.services.TestRunnerService;
@@ -37,6 +38,10 @@ public class ChallengeConsumer {
 
         ChallengeAnswerEntity answer = challengeAnswerOptional.get();
 
+        answer.setStatus(AnswerStatus.PROCESSING);
+
+        challengeAnswerRepository.save(answer);
+
         condenseAndProcess(answer);
 
         Optional<ChallengeEntity> challengeOptional = challengeRepository.findById(answer.getChallengeId());
@@ -60,6 +65,12 @@ public class ChallengeConsumer {
 
         resultCondenser.condenseResults();
         resultCondenser.generateScore();
+
+        if (resultCondenser.getResultModel().getScore() > 70) {
+            challengeAnswer.setStatus(AnswerStatus.CORRECT);
+        } else {
+            challengeAnswer.setStatus(AnswerStatus.INCORRECT);
+        }
 
         challengeAnswer.setChallengeResult(resultCondenser.getResultModel());
 

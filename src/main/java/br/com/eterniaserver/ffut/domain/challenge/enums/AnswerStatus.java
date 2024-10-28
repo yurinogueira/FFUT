@@ -4,6 +4,5 @@ public enum AnswerStatus {
     PENDING,
     PROCESSING,
     CORRECT,
-    INCORRECT,
-    TIMEOUT
+    INCORRECT
 }
