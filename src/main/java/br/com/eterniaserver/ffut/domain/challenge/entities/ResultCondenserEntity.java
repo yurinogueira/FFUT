@@ -97,7 +97,7 @@ public class ResultCondenserEntity {
 
     private double calculateCoverageScore(int covered, int missed) {
         int total = covered + missed;
-        return total > 0 ? (double) covered / total : 0.0;
+        return total > 0 ? (double) covered / total : 1.0;
     }
 
     private double calculateMutationScore(List<MutationResultEntity> mutationResults) {
