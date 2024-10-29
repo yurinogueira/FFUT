@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -37,7 +38,7 @@ public class ChallengeAnswerService {
     public ListChallengeAnswerResponse listByUser(int page, int size, String userId) {
         return new ListChallengeAnswerResponse(
                 answerRepository
-                        .findAllByUserId(PageRequest.of(page, size), userId)
+                        .findAllByUserIdOrderByCreatedAtDesc(PageRequest.of(page, size), userId)
                         .stream()
                         .map(this::toResponse)
                         .toList(),
@@ -49,7 +50,7 @@ public class ChallengeAnswerService {
     public ListChallengeAnswerResponse list(ListChallengeAnswerRequest request) {
         return new ListChallengeAnswerResponse(
                 answerRepository
-                        .findAllByChallengeIdAndUserId(request.challengeId(), request.userId())
+                        .findAllByChallengeIdAndUserIdOrderByCreatedAtDesc(request.challengeId(), request.userId())
                         .stream()
                         .map(this::toResponse)
                         .toList(),
@@ -64,12 +65,14 @@ public class ChallengeAnswerService {
         ChallengeAnswerEntity entity = new ChallengeAnswerEntity();
 
         entity.setChallengeId(request.challengeId());
+        entity.setChallengeName(challenge.getName());
         entity.setUserId(request.userId());
         entity.setUsername(request.username());
         entity.setStatus(AnswerStatus.PENDING);
         entity.setChallengeVersion(challenge.getChallengeVersion());
         entity.setChallengeCode(challenge.getCode());
         entity.setUserTestCode(request.testAnswer());
+        entity.setCreatedAt(new Date(System.currentTimeMillis()));
 
         answerRepository.save(entity);
 
@@ -93,6 +96,7 @@ public class ChallengeAnswerService {
                 entity.getChallengeName(),
                 entity.getUserTestCode(),
                 entity.getStatus(),
+                entity.getCreatedAt(),
                 toResponse(entity.getChallengeResult())
         );
     }
