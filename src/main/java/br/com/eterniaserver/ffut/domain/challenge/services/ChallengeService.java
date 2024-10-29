@@ -44,6 +44,7 @@ public class ChallengeService {
         entity.setDescription(request.description());
         entity.setCode(request.code());
         entity.setChallengeVersion(0);
+        entity.setDifficulty(request.difficulty());
 
         challengeRepository.save(entity);
 
@@ -64,6 +65,7 @@ public class ChallengeService {
         entity.setName(data.name());
         entity.setDescription(data.description());
         entity.setCode(data.code());
+        entity.setDifficulty(data.difficulty());
 
         entity.incrementChallengeVersion();
 
@@ -90,6 +92,7 @@ public class ChallengeService {
                 entity.getDescription(),
                 entity.getChallengeVersion(),
                 entity.getCode(),
+                entity.getDifficulty(),
                 entity.getRank().stream().map(this::toResponse).toList()
         );
     }

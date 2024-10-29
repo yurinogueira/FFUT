@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/answer/")
 @RequiredArgsConstructor
@@ -22,6 +24,12 @@ public class ChallengeAnswerController {
     public ListChallengeAnswerResponse list(@PathVariable String challengeId, @PathVariable String userId) {
         ListChallengeAnswerRequest request = new ListChallengeAnswerRequest(challengeId, userId);
         return service.list(request);
+    }
+
+    @GetMapping("list/user/{userId}/")
+    @ResponseStatus(HttpStatus.OK)
+    public ListChallengeAnswerResponse listByUser(@PathVariable String userId, @RequestParam Optional<Integer> page, @RequestParam Optional<Integer> size) {
+        return service.listByUser(page.orElse(0), size.orElse(10), userId);
     }
 
     @PostMapping

@@ -33,7 +33,8 @@ public class ChallengeController {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getChallengeVersion(),
-                entity.getCode()
+                entity.getCode(),
+                entity.getDifficulty()
         );
     }
 

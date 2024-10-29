@@ -3,17 +3,19 @@ package br.com.eterniaserver.ffut.domain.challenge.models;
 import br.com.eterniaserver.ffut.domain.challenge.enums.AnswerStatus;
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public record ReadChallengeAnswerResponse(
         String answerId,
-        String challengeVersion,
-        String challengeCode,
+        Integer challengeVersion,
+        String challengeId,
+        String challengeName,
         String userTest,
         AnswerStatus status,
-        Optional<ReadChallengeResultResponse> challengeResult
-        ) {
+        Date createdAt,
+        Optional<ReadChallengeResultResponse> challengeResult) {
 
     public record ReadChallengeResultResponse(
             Double score,

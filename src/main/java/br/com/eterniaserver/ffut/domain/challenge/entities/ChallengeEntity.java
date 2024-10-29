@@ -2,6 +2,7 @@ package br.com.eterniaserver.ffut.domain.challenge.entities;
 
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 
+import br.com.eterniaserver.ffut.domain.challenge.enums.ChallengeDifficulty;
 import lombok.Data;
 
 import org.springframework.data.annotation.Id;
@@ -26,6 +27,8 @@ public class ChallengeEntity {
     private Integer challengeVersion;
 
     private String code;
+
+    private ChallengeDifficulty difficulty;
 
     private List<ChallengeRankEntity> rank = new ArrayList<>();
 
