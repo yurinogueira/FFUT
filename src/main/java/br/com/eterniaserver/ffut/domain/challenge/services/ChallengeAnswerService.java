@@ -94,6 +94,7 @@ public class ChallengeAnswerService {
                 entity.getChallengeVersion(),
                 entity.getChallengeId(),
                 entity.getChallengeName(),
+                entity.getChallengeCode(),
                 entity.getUserTestCode(),
                 entity.getStatus(),
                 entity.getCreatedAt(),

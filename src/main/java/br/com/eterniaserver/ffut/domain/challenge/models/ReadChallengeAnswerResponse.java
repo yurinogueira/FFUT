@@ -12,6 +12,7 @@ public record ReadChallengeAnswerResponse(
         Integer challengeVersion,
         String challengeId,
         String challengeName,
+        String challengeCode,
         String userTest,
         AnswerStatus status,
         Date createdAt,
