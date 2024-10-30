@@ -66,6 +66,11 @@ public class ResultCondenserEntity {
 
         double testScore = totalTests > 0 ? (double) resultModel.getTestsSuccess() / totalTests : 0.0;
 
+        if (totalTests != resultModel.getTestsSuccess()) {
+            resultModel.setScore(0.2 * testScore * 100);
+            return;
+        }
+
         double instructionScore = calculateCoverageScore(
                 resultModel.getInstructionCoverage(),
                 resultModel.getInstructionMissed()
