@@ -84,16 +84,20 @@ public class JWTService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_CREDENTIALS);
         }
 
-        long exp = userAccountEntity.getVerified() ? Long.parseLong(expiration) : 5L;
+        return this.authenticate(userAccountEntity);
+    }
+
+    public AuthenticateResponse authenticate(UserAccountEntity userAccount) {
+        long exp = userAccount.getVerified() ? Long.parseLong(expiration) : 5L;
         LocalDateTime expDate = LocalDateTime.now().plusMinutes(exp);
         Date date = Date.from(expDate.atZone(ZoneId.systemDefault()).toInstant());
 
-        String login = userAccountEntity.getLogin();
+        String login = userAccount.getLogin();
         String token = Jwts.builder().subject(login).expiration(date).signWith(getSecretKey()).compact();
-        String[] roles = userAccountEntity.getRoles().toArray(String[]::new);
+        String[] roles = userAccount.getRoles().toArray(String[]::new);
 
-        if (!userAccountEntity.getVerified()) {
-            sendVerificationEmail(userAccountEntity, token);
+        if (!userAccount.getVerified()) {
+            sendVerificationEmail(userAccount, token);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.INVALID_NOT_VERIFIED);
         }
 
