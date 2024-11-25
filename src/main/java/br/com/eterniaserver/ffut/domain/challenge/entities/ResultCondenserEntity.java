@@ -3,10 +3,19 @@ package br.com.eterniaserver.ffut.domain.challenge.entities;
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.LineResultEntity;
 
 import lombok.Getter;
 
 import org.apache.commons.io.FileUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,17 +32,6 @@ public class ResultCondenserEntity {
     private static final int TESTS_RUNS = 0;
     private static final int TESTS_FAILED = 1;
     private static final int TESTS_ERROR = 2;
-
-    private static final int INSTRUCTION_MISSED = 3;
-    private static final int INSTRUCTION_COVERAGE = 4;
-    private static final int BRANCH_MISSED = 5;
-    private static final int BRANCH_COVERAGE = 6;
-    private static final int LINE_MISSED = 7;
-    private static final int LINE_COVERAGE = 8;
-    private static final int COMPLEXITY_MISSED = 9;
-    private static final int COMPLEXITY_COVERAGE = 10;
-    private static final int METHOD_MISSED = 11;
-    private static final int METHOD_COVERAGE = 12;
 
     private static final int MUTATION_TYPE = 2;
     private static final int MUTATION_INFO = 3;
@@ -172,34 +170,76 @@ public class ResultCondenserEntity {
         File file = new File(jacocoOutputPath);
 
         try {
-            String[] data = FileUtils
-                    .readLines(file, StandardCharsets.UTF_8)
-                    .get(1)
-                    .split(",");
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-            resultModel.setInstructionCoverage(parseInt(data[INSTRUCTION_COVERAGE]));
-            resultModel.setInstructionMissed(parseInt(data[INSTRUCTION_MISSED]));
-            resultModel.setBranchCoverage(parseInt(data[BRANCH_COVERAGE]));
-            resultModel.setBranchMissed(parseInt(data[BRANCH_MISSED]));
-            resultModel.setLineCoverage(parseInt(data[LINE_COVERAGE]));
-            resultModel.setLineMissed(parseInt(data[LINE_MISSED]));
-            resultModel.setComplexityCoverage(parseInt(data[COMPLEXITY_COVERAGE]));
-            resultModel.setComplexityMissed(parseInt(data[COMPLEXITY_MISSED]));
-            resultModel.setMethodCoverage(parseInt(data[METHOD_COVERAGE]));
-            resultModel.setMethodMissed(parseInt(data[METHOD_MISSED]));
-        } catch (IOException exception) {
+            documentBuilderFactory.setValidating(false);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+            Document jacocoReport = documentBuilder.parse(file);
+
+            jacocoReport.getDocumentElement().normalize();
+
+            NodeList sourceFiles = jacocoReport.getElementsByTagName("sourcefile");
+
+            for (int i = 0; i < sourceFiles.getLength(); i++) {
+                Node sourceFileNode = sourceFiles.item(i);
+
+                if (sourceFileNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element sourceFileElement = (Element) sourceFileNode;
+
+                    NodeList lines = sourceFileElement.getElementsByTagName("line");
+
+                    List<LineResultEntity> lineResults = new ArrayList<>(lines.getLength());
+                    for (int j = 0; j < lines.getLength(); j++) {
+                        lineResults.add(getLineResultEntity(lines.item(j)));
+                    }
+
+                    resultModel.setLineResults(lineResults);
+
+                    NodeList counters = sourceFileElement.getElementsByTagName("counter");
+                    for (int j = 0; j < counters.getLength(); j++) {
+                        extracted(counters.item(j));
+                    }
+                }
+            }
+
+        } catch (Exception exception) {
             LOGGER.log(Level.SEVERE, exception.getMessage());
+        }
+    }
 
-            resultModel.setInstructionCoverage(0);
-            resultModel.setInstructionMissed(0);
-            resultModel.setBranchCoverage(0);
-            resultModel.setBranchMissed(0);
-            resultModel.setLineCoverage(0);
-            resultModel.setLineMissed(0);
-            resultModel.setComplexityCoverage(0);
-            resultModel.setComplexityMissed(0);
-            resultModel.setMethodCoverage(0);
-            resultModel.setMethodMissed(0);
+    private void extracted(Node counterNode) {
+        Element counterElement = (Element) counterNode;
+
+        String type = counterElement.getAttribute("type");
+        String missed = counterElement.getAttribute("missed");
+        String covered = counterElement.getAttribute("covered");
+
+        switch (type) {
+            case "INSTRUCTION":
+                resultModel.setInstructionCoverage(parseInt(covered));
+                resultModel.setInstructionMissed(parseInt(missed));
+                break;
+            case "BRANCH":
+                resultModel.setBranchCoverage(parseInt(covered));
+                resultModel.setBranchMissed(parseInt(missed));
+                break;
+            case "LINE":
+                resultModel.setLineCoverage(parseInt(covered));
+                resultModel.setLineMissed(parseInt(missed));
+                break;
+            case "COMPLEXITY":
+                resultModel.setComplexityCoverage(parseInt(covered));
+                resultModel.setComplexityMissed(parseInt(missed));
+                break;
+            case "METHOD":
+                resultModel.setMethodCoverage(parseInt(covered));
+                resultModel.setMethodMissed(parseInt(missed));
+                break;
+            default:
+                break;
         }
     }
 
@@ -222,6 +262,19 @@ public class ResultCondenserEntity {
             resultModel.setTestsFailed(0);
             resultModel.setTestsError(0);
         }
+    }
+
+    private LineResultEntity getLineResultEntity(Node lineNode) {
+        Element lineElement = (Element) lineNode;
+
+        LineResultEntity lineResult = new LineResultEntity();
+        lineResult.setLineNumber(parseInt(lineElement.getAttribute("nr")));
+        lineResult.setInstructionMissed(parseInt(lineElement.getAttribute("mi")));
+        lineResult.setInstructionCoverage(parseInt(lineElement.getAttribute("ci")));
+        lineResult.setBranchMissed(parseInt(lineElement.getAttribute("mb")));
+        lineResult.setBranchCoverage(parseInt(lineElement.getAttribute("cb")));
+
+        return lineResult;
     }
 
     private int getTestValue(String[] data, int index) {

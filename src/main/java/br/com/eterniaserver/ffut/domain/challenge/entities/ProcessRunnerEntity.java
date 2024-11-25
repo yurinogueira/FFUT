@@ -57,8 +57,9 @@ public class ProcessRunnerEntity {
                         </goals>
                         <configuration>
                           <outputEncoding>UTF-8</outputEncoding>
+                          <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
                           <formats>
-                            <format>CSV</format>
+                            <format>XML</format>
                           </formats>
                         </configuration>
                         <phase>prepare-package</phase>
@@ -148,7 +149,7 @@ public class ProcessRunnerEntity {
         process.waitFor(120, TimeUnit.SECONDS);
 
         pitestOutputPath = answerPath + "/target/pit-reports/mutations.csv";
-        jacocoOutputPath = answerPath + "/target/site/jacoco/jacoco.csv";
+        jacocoOutputPath = answerPath + "/target/jacoco-report/jacoco.xml";
         resultOutputPath = answerPath + "/target/surefire-reports/MainTest.txt";
     }
 

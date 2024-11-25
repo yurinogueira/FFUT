@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -45,35 +46,37 @@ public class ChallengeAnswerEntity {
     @Data
     public static class ChallengeResultEntity {
 
-        private Double score;
+        private Double score = 0.0D;
 
-        private Integer testsSuccess;
+        private Integer testsSuccess = 0;
 
-        private Integer testsFailed;
+        private Integer testsFailed = 0;
 
-        private Integer testsError;
+        private Integer testsError = 0;
 
-        private Integer instructionCoverage;
+        private Integer instructionCoverage = 0;
 
-        private Integer instructionMissed;
+        private Integer instructionMissed = 0;
 
-        private Integer branchCoverage;
+        private Integer branchCoverage = 0;
 
-        private Integer branchMissed;
+        private Integer branchMissed = 0;
 
-        private Integer lineCoverage;
+        private Integer lineCoverage = 0;
 
-        private Integer lineMissed;
+        private Integer lineMissed = 0;
 
-        private Integer complexityCoverage;
+        private Integer complexityCoverage = 0;
 
-        private Integer complexityMissed;
+        private Integer complexityMissed = 0;
 
-        private Integer methodCoverage;
+        private Integer methodCoverage = 0;
 
-        private Integer methodMissed;
+        private Integer methodMissed = 0;
 
-        private List<MutationResultEntity> mutationResults;
+        private List<LineResultEntity> lineResults = new ArrayList<>();
+
+        private List<MutationResultEntity> mutationResults = new ArrayList<>();
 
     }
 
@@ -87,6 +90,21 @@ public class ChallengeAnswerEntity {
         private Boolean isKilled;
 
         private Integer line;
+    }
+
+    @Data
+    public static class LineResultEntity {
+
+        private Integer lineNumber;
+
+        private Integer instructionMissed;
+
+        private Integer instructionCoverage;
+
+        private Integer branchMissed;
+
+        private Integer branchCoverage;
+
     }
 
 }
