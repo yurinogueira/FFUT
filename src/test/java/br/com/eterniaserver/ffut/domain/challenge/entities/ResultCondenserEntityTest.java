@@ -3,6 +3,7 @@ package br.com.eterniaserver.ffut.domain.challenge.entities;
 import br.com.eterniaserver.ffut.domain.challenge.enums.MutationType;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.LineResultEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class ResultCondenserEntityTest {
 
     private static final String RESULT_OUTPUT_PATH = "src/test/resources/MainTest.txt";
-    private static final String JACOCO_OUTPUT_PATH = "src/test/resources/jacoco.csv";
+    private static final String JACOCO_OUTPUT_PATH = "src/test/resources/jacoco.xml";
     private static final String PITEST_OUTPUT_PATH = "src/test/resources/mutations.csv";
 
     @Test
@@ -53,6 +54,34 @@ class ResultCondenserEntityTest {
         Assertions.assertEquals(2, resultCondenser.getResultModel().getComplexityCoverage());
         Assertions.assertEquals(0, resultCondenser.getResultModel().getMethodMissed());
         Assertions.assertEquals(2, resultCondenser.getResultModel().getMethodCoverage());
+    }
+
+    @Test
+    void validateJacocoResultsCondenserLineResults() {
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
+                RESULT_OUTPUT_PATH,
+                JACOCO_OUTPUT_PATH,
+                PITEST_OUTPUT_PATH
+        );
+
+        resultCondenser.condenseResults();
+
+        Assertions.assertNotNull(resultCondenser.getResultModel());
+
+        LineResultEntity first = resultCondenser.getResultModel().getLineResults().get(0);
+        LineResultEntity last = resultCondenser.getResultModel().getLineResults().get(1);
+
+        Assertions.assertEquals(3, first.getLineNumber());
+        Assertions.assertEquals(0, first.getInstructionMissed());
+        Assertions.assertEquals(3, first.getInstructionCoverage());
+        Assertions.assertEquals(0, first.getBranchMissed());
+        Assertions.assertEquals(0, first.getBranchCoverage());
+
+        Assertions.assertEquals(5, last.getLineNumber());
+        Assertions.assertEquals(0, last.getInstructionMissed());
+        Assertions.assertEquals(4, last.getInstructionCoverage());
+        Assertions.assertEquals(0, last.getBranchMissed());
+        Assertions.assertEquals(0, last.getBranchCoverage());
     }
 
     @Test
