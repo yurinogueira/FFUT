@@ -33,6 +33,7 @@ public record ReadChallengeAnswerResponse(
             Integer complexityMissed,
             Integer methodCoverage,
             Integer methodMissed,
+            List<ReadLineResultResponse> lineResults,
             List<ReadMutationResultResponse> mutationResults) {
     }
 
@@ -41,6 +42,15 @@ public record ReadChallengeAnswerResponse(
             String mutationInfo,
             Boolean isKilled,
             Integer line) {
+    }
+
+    public record ReadLineResultResponse(
+            Integer lineNumber,
+            Integer instructionMissed,
+            Integer instructionCoverage,
+            Integer branchMissed,
+            Integer branchCoverage,
+            Boolean covered) {
     }
 
 }
