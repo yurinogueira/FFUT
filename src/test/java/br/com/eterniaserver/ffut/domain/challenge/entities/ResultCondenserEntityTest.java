@@ -155,13 +155,13 @@ class ResultCondenserEntityTest {
 
         resultCondenser.generateScore();
 
-        double expectedScore = (0.2 * (1)) +
-                                (0.1 * (80.0 / 100)) +
+        double expectedScore = (0.15 * (1)) +
+                                (0.05 * (80.0 / 100)) +
                                 (0.1 * (70.0 / 100)) +
-                                (0.1 * (90.0 / 100)) +
-                                (0.2 * (85.0 / 100)) +
-                                (0.1 * (75.0 / 100)) +
-                                (0.2 * (0.8 / 1.2));
+                                (0.05 * (90.0 / 100)) +
+                                (0.1 * (85.0 / 100)) +
+                                (0.05 * (75.0 / 100)) +
+                                (0.5 * (0.8 / 1.2));
 
         expectedScore *= 100;
 
@@ -212,13 +212,13 @@ class ResultCondenserEntityTest {
 
         resultCondenser.generateScore();
 
-        double expectedScore = (0.2 * (1)) +
+        double expectedScore = (0.15 * (1)) +
+                                (0.05 * (1)) +
                                 (0.1 * (1)) +
+                                (0.05 * (1)) +
                                 (0.1 * (1)) +
-                                (0.1 * (1)) +
-                                (0.2 * (1)) +
-                                (0.1 * (1)) +
-                                (0.2 * (1));
+                                (0.05 * (1)) +
+                                (0.5 * (1));
 
         expectedScore *= 100;
 
@@ -269,9 +269,58 @@ class ResultCondenserEntityTest {
 
         resultCondenser.generateScore();
 
-        double expectedScore = (0.2 * (0.5));
+        double expectedScore = (0.15 * (0.5));
 
         expectedScore *= 100;
+
+        Assertions.assertEquals(expectedScore, resultModel.getScore(), 0.01);
+    }
+
+    @Test
+    void testingWhenNotTestsPass() {
+        ResultCondenserEntity resultCondenser = new ResultCondenserEntity(
+                RESULT_OUTPUT_PATH,
+                JACOCO_OUTPUT_PATH,
+                PITEST_OUTPUT_PATH
+        );
+
+        ChallengeResultEntity resultModel = resultCondenser.getResultModel();
+        resultModel.setTestsSuccess(0);
+        resultModel.setTestsFailed(2);
+        resultModel.setTestsError(0);
+
+        resultModel.setInstructionCoverage(2);
+        resultModel.setInstructionMissed(0);
+        resultModel.setBranchCoverage(0);
+        resultModel.setBranchMissed(0);
+        resultModel.setLineCoverage(2);
+        resultModel.setLineMissed(0);
+        resultModel.setComplexityCoverage(2);
+        resultModel.setComplexityMissed(0);
+        resultModel.setMethodCoverage(2);
+        resultModel.setMethodMissed(0);
+
+        List<MutationResultEntity> mutationResults = new ArrayList<>();
+        MutationResultEntity mutation1 = new MutationResultEntity();
+        mutation1.setMutationType(MutationType.MATH);
+        mutation1.setMutationInfo("sum");
+        mutation1.setIsKilled(false);
+        mutation1.setLine(3);
+
+        MutationResultEntity mutation2 = new MutationResultEntity();
+        mutation2.setMutationType(MutationType.PRIMITIVE_RETURNS);
+        mutation2.setMutationInfo("sum");
+        mutation2.setIsKilled(true);
+        mutation2.setLine(3);
+
+        mutationResults.add(mutation1);
+        mutationResults.add(mutation2);
+
+        resultModel.setMutationResults(mutationResults);
+
+        resultCondenser.generateScore();
+
+        double expectedScore = 0;
 
         Assertions.assertEquals(expectedScore, resultModel.getScore(), 0.01);
     }

@@ -4,15 +4,17 @@ import br.com.eterniaserver.ffut.Constants;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.MutationResultEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.ChallengeResultEntity;
+import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeAnswerEntity.LineResultEntity;
 import br.com.eterniaserver.ffut.domain.challenge.entities.ChallengeEntity;
 import br.com.eterniaserver.ffut.domain.challenge.enums.AnswerStatus;
 import br.com.eterniaserver.ffut.domain.challenge.models.*;
 import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeAnswerResponse.ReadMutationResultResponse;
 import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeAnswerResponse.ReadChallengeResultResponse;
+import br.com.eterniaserver.ffut.domain.challenge.models.ReadChallengeAnswerResponse.ReadLineResultResponse;
 import br.com.eterniaserver.ffut.domain.challenge.queue.ChallengeProducer;
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRepository;
-
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
+
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
@@ -125,8 +127,20 @@ public class ChallengeAnswerService {
                         entity.getComplexityMissed(),
                         entity.getMethodCoverage(),
                         entity.getMethodMissed(),
+                        entity.getLineResults().stream().map(this::toResponse).toList(),
                         entity.getMutationResults().stream().map(this::toResponse).toList()
                 )
+        );
+    }
+
+    private ReadLineResultResponse toResponse(LineResultEntity entity) {
+        return new ReadLineResultResponse(
+                entity.getLineNumber(),
+                entity.getInstructionMissed(),
+                entity.getInstructionCoverage(),
+                entity.getBranchMissed(),
+                entity.getBranchCoverage(),
+                entity.isCovered()
         );
     }
 

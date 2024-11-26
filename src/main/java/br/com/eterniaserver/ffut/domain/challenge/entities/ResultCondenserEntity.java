@@ -64,8 +64,13 @@ public class ResultCondenserEntity {
 
         double testScore = totalTests > 0 ? (double) resultModel.getTestsSuccess() / totalTests : 0.0;
 
+        if (resultModel.getTestsSuccess() == 0) {
+            resultModel.setScore(0.0);
+            return;
+        }
+
         if (totalTests != resultModel.getTestsSuccess()) {
-            resultModel.setScore(0.2 * testScore * 100);
+            resultModel.setScore(0.15 * testScore * 100);
             return;
         }
 
@@ -87,13 +92,13 @@ public class ResultCondenserEntity {
 
         double mutationScore = calculateMutationScore(resultModel.getMutationResults());
 
-        double finalScore = (0.2 * testScore) +
-                (0.1 * instructionScore) +
+        double finalScore = (0.15 * testScore) +
+                (0.05 * instructionScore) +
                 (0.1 * branchScore) +
-                (0.1 * lineScore) +
-                (0.2 * complexityScore) +
-                (0.1 * methodScore) +
-                (0.2 * mutationScore);
+                (0.05 * lineScore) +
+                (0.1 * complexityScore) +
+                (0.05 * methodScore) +
+                (0.5 * mutationScore);
 
         resultModel.setScore(100 * finalScore);
     }
