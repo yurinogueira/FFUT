@@ -106,7 +106,8 @@ public class ChallengeAnswerEntity {
         private Integer branchCoverage;
 
         public boolean isCovered() {
-            return instructionCoverage > 0 || branchCoverage > 0;
+            return (instructionCoverage > 0 || (instructionCoverage == 0 && instructionMissed == 0))
+                    || (branchCoverage > 0 || (branchCoverage == 0 && branchMissed == 0));
         }
 
     }
