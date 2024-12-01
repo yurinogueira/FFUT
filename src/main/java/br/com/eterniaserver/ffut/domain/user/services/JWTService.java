@@ -10,6 +10,7 @@ import br.com.eterniaserver.ffut.domain.user.models.AuthenticateResponse;
 import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenRequest;
 import br.com.eterniaserver.ffut.domain.user.models.VerifyTokenResponse;
 
+import br.com.eterniaserver.ffut.domain.user.repositories.UserAccountRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -39,6 +40,7 @@ import java.util.logging.Logger;
 public class JWTService {
 
     private final Logger LOGGER = Logger.getGlobal();
+    private final UserAccountRepository userAccountRepository;
 
     @Value("${spring.security.jwt.expiration}")
     private String expiration;
@@ -49,6 +51,9 @@ public class JWTService {
     @Value("${application.domain}")
     private String applicationDomain;
 
+    @Value("${frontend.domain}")
+    private String frontendDomain;
+
     private Optional<SecretKey> secretKey = Optional.empty();
 
     private final SpringTemplateEngine springTemplateEngine;
@@ -57,10 +62,11 @@ public class JWTService {
 
     public JWTService(SpringTemplateEngine springTemplateEngine,
                       PasswordEncoder passwordEncoder,
-                      EmailService emailService) {
+                      EmailService emailService, UserAccountRepository userAccountRepository) {
         this.springTemplateEngine = springTemplateEngine;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.userAccountRepository = userAccountRepository;
     }
 
     public VerifyTokenResponse verify(VerifyTokenRequest request) {
@@ -120,6 +126,38 @@ public class JWTService {
             LOGGER.log(Level.INFO, exception.getMessage());
             return false;
         }
+    }
+
+    public void sendRecoveryEmail(UserAccountEntity userAccountEntity) {
+        LocalDateTime expDate = LocalDateTime.now().plusMinutes(5L);
+        Date date = Date.from(expDate.atZone(ZoneId.systemDefault()).toInstant());
+
+        String token = Jwts
+                .builder()
+                .subject(userAccountEntity.getLogin())
+                .expiration(date)
+                .signWith(getSecretKey())
+                .compact();
+
+        Context thymeleafContext = new Context();
+        Map<String, Object> variables = new HashMap<>();
+
+        String urlLink = frontendDomain + "/login/recovery?token=" + token;
+        String templateName = "recovery-account."  + userAccountEntity.getLocale() + ".html";
+
+        variables.put("link", urlLink);
+
+        thymeleafContext.setVariables(variables);
+
+        String htmlBody = springTemplateEngine.process(templateName, thymeleafContext);
+
+        emailService.sendEmail(userAccountEntity.getLogin(), "Login - Recovery", htmlBody);
+    }
+
+    public void changePassword(UserAccountEntity userAccountEntity, String password) {
+        userAccountEntity.setPassword(passwordEncoder.encode(password));
+
+        userAccountRepository.save(userAccountEntity);
     }
 
     private void sendVerificationEmail(UserAccountEntity userAccountEntity, String token) throws ResponseStatusException {
