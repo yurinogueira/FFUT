@@ -9,6 +9,8 @@ import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeAnswerRe
 import br.com.eterniaserver.ffut.domain.challenge.repositories.ChallengeRepository;
 import br.com.eterniaserver.ffut.domain.challenge.services.TestRunnerService;
 
+import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
+import br.com.eterniaserver.ffut.domain.user.repositories.UserAccountRepository;
 import lombok.Data;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -25,6 +27,8 @@ public class ChallengeConsumer {
 
     private final ChallengeAnswerRepository challengeAnswerRepository;
     private final ChallengeRepository challengeRepository;
+    private final UserAccountRepository userAccountRepository;
+
     private final TestRunnerService testRunnerService;
 
     @RabbitListener(queues = "challenge")
@@ -45,15 +49,21 @@ public class ChallengeConsumer {
         condenseAndProcess(answer);
 
         Optional<ChallengeEntity> challengeOptional = challengeRepository.findById(answer.getChallengeId());
+        Optional<UserAccountEntity> userOptional = userAccountRepository.findById(answer.getUserId());
 
         if (challengeOptional.isEmpty()) {
             LOGGER.warning("Challenge not found: " + answer.getChallengeId());
             return;
+        } else if (userOptional.isEmpty()) {
+            LOGGER.warning("User not found: " + answer.getUserId());
+            return;
         }
 
         ChallengeEntity challenge = challengeOptional.get();
+        UserAccountEntity user = userOptional.get();
 
         challenge.addToRank(answer);
+        user.updateScore(challenge, answer);
 
         challengeRepository.save(challenge);
     }
