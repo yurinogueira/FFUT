@@ -10,6 +10,7 @@ import br.com.eterniaserver.ffut.domain.user.repositories.UserAccountRepository;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -30,11 +33,14 @@ public class UserAccountService {
 
     @Transactional
     public ListUserRankResponse rankList(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("score"));
+        Pageable pageRequest = PageRequest.of(page, size, sort);
+
+        List<UserAccountEntity> result = userAccountRepository.findAll(pageRequest).toList();
+
         return new ListUserRankResponse(
-                userAccountRepository
-                        .findAll(PageRequest.of(page, size, Sort.by(Sort.Order.desc("score"))))
-                        .stream()
-                        .map(UserAccountEntity::toRank)
+                IntStream.range(0, result.size())
+                        .mapToObj(i -> result.get(i).toRank(i))
                         .toList(),
                 userAccountRepository.count()
         );

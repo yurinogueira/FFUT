@@ -63,8 +63,8 @@ public class UserAccountEntity {
         return name + " " + surname;
     }
 
-    public UserRankResponse toRank() {
-        return new UserRankResponse(getUsername(), score);
+    public UserRankResponse toRank(int index) {
+        return new UserRankResponse(index, getUsername(), score);
     }
 
     public void validate() {
