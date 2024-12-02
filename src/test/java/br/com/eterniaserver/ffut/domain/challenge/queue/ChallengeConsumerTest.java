@@ -189,8 +189,12 @@ class ChallengeConsumerTest {
 
         Mockito.verify(challenge, Mockito.times(1))
                 .addToRank(challengeAnswer);
+        Mockito.verify(user, Mockito.times(1))
+                .updateScore(challenge, challengeAnswer);
 
         Mockito.verify(challengeRepositoryMock, Mockito.times(1))
                 .save(challenge);
+        Mockito.verify(userAccountRepositoryMock, Mockito.times(1))
+                .save(user);
     }
 }
