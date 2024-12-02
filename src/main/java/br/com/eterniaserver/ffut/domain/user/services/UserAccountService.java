@@ -4,18 +4,13 @@ import br.com.eterniaserver.ffut.Constants;
 import br.com.eterniaserver.ffut.domain.user.dtos.UserDto;
 import br.com.eterniaserver.ffut.domain.user.entities.UserAccountEntity;
 import br.com.eterniaserver.ffut.domain.user.enums.BaseRoles;
-import br.com.eterniaserver.ffut.domain.user.models.CreateUserRequest;
-import br.com.eterniaserver.ffut.domain.user.models.CreateUserResponse;
-import br.com.eterniaserver.ffut.domain.user.models.DeleteUserRequest;
-import br.com.eterniaserver.ffut.domain.user.models.DeleteUserResponse;
-import br.com.eterniaserver.ffut.domain.user.models.ReadUserRequest;
-import br.com.eterniaserver.ffut.domain.user.models.ReadUserResponse;
-import br.com.eterniaserver.ffut.domain.user.models.UpdateUserRequest;
-import br.com.eterniaserver.ffut.domain.user.models.UpdateUserResponse;
+import br.com.eterniaserver.ffut.domain.user.models.*;
 import br.com.eterniaserver.ffut.domain.user.repositories.UserAccountRepository;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +27,18 @@ public class UserAccountService {
 
     private final PasswordEncoder encoder;
     private final UserAccountRepository userAccountRepository;
+
+    @Transactional
+    public ListUserRankResponse rankList(int page, int size) {
+        return new ListUserRankResponse(
+                userAccountRepository
+                        .findAll(PageRequest.of(page, size, Sort.by(Sort.Order.desc("score"))))
+                        .stream()
+                        .map(UserAccountEntity::toRank)
+                        .toList(),
+                userAccountRepository.count()
+        );
+    }
 
     @Transactional
     public CreateUserResponse create(CreateUserRequest request) {
