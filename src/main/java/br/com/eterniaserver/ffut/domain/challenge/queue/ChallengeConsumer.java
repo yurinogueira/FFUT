@@ -66,6 +66,7 @@ public class ChallengeConsumer {
         user.updateScore(challenge, answer);
 
         challengeRepository.save(challenge);
+        userAccountRepository.save(user);
     }
 
     private void condenseAndProcess(ChallengeAnswerEntity challengeAnswer) {
