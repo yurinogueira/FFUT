@@ -104,6 +104,7 @@ public class SecurityFilterConfiguration {
                     request.requestMatchers("/error/**").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/user/").permitAll();
                     request.requestMatchers(HttpMethod.GET, "/user/").hasRole(BaseRoles.USER.name());
+                    request.requestMatchers(HttpMethod.GET, "/user/rank/list/").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.GET, "/user/**").hasRole(BaseRoles.ADMIN.name());
                     request.requestMatchers(HttpMethod.PUT, "/user/").hasRole(BaseRoles.USER.name());
                     request.requestMatchers(HttpMethod.DELETE, "/user/**").hasRole(BaseRoles.ADMIN.name());
